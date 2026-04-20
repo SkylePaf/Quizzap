@@ -1,6 +1,11 @@
 const LOADER_MIN_DURATION_MS   = 800;
 const LOADER_FRAME_INTERVAL_MS = 50;
 
+const STORAGE_KEY_CREATED = "quizzap_quizzes_created";
+const STORAGE_KEY_EDIT    = "quizzap_edit_quiz";
+const STORAGE_KEY_SOURCE  = "quizzap_edit_source";
+const STORAGE_KEY_PLAY    = "quizzap_play_quiz";
+
 const loaderStates = [
     ["","",""],[".",  "",""],["..","",""],["...","",""],
     ["...",".",""],[  "...","..",""],["...","...",""],
@@ -61,11 +66,11 @@ function showNotification(message, type = "info") {
 }
 
 function getQuizzes() {
-    return JSON.parse(localStorage.getItem("quizzap_quizzes_created") || "[]");
+    return JSON.parse(localStorage.getItem(STORAGE_KEY_CREATED) || "[]");
 }
 
 function saveQuizzes(quizzes) {
-    localStorage.setItem("quizzap_quizzes_created", JSON.stringify(quizzes));
+    localStorage.setItem(STORAGE_KEY_CREATED, JSON.stringify(quizzes));
 }
 
 function formatDate(iso) {
@@ -74,7 +79,7 @@ function formatDate(iso) {
 }
 
 function createCard(quiz, index) {
-    const card  = document.createElement("div");
+    const card       = document.createElement("div");
     card.className   = "QuizCard";
     card.dataset.id  = quiz.id;
 
@@ -91,6 +96,7 @@ function createCard(quiz, index) {
             <p class="CardMeta">modifié le <span>${date}</span></p>
         </div>
         <div class="CardFooter">
+            <button class="CardAction play">jouer</button>
             <button class="CardAction edit">modifier</button>
             <button class="CardAction download">télécharger</button>
         </div>
@@ -103,11 +109,17 @@ function createCard(quiz, index) {
         confirmModal.style.pointerEvents = "all";
     });
 
+    card.querySelector(".CardAction.play").addEventListener("click", (e) => {
+        e.stopPropagation();
+        localStorage.setItem(STORAGE_KEY_PLAY, JSON.stringify(quiz));
+        window.open("../QuizzPlayer/QuizzPlayer.html", "_self");
+    });
+
     card.querySelector(".CardAction.edit").addEventListener("click", (e) => {
         e.stopPropagation();
-        localStorage.setItem("quizzap_edit_quiz", JSON.stringify(quiz));
-        localStorage.setItem("quizzap_edit_source", "created");
-        window.open("/src/scenes/QuizzCreator/QuizzCreator.html", "_self");
+        localStorage.setItem(STORAGE_KEY_EDIT, JSON.stringify(quiz));
+        localStorage.setItem(STORAGE_KEY_SOURCE, "created");
+        window.open("../QuizzCreator/QuizzCreator.html", "_self");
     });
 
     card.querySelector(".CardAction.download").addEventListener("click", (e) => {

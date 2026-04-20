@@ -1,6 +1,11 @@
 const LOADER_MIN_DURATION_MS   = 800;
 const LOADER_FRAME_INTERVAL_MS = 50;
 
+const STORAGE_KEY_IMPORTED = "quizzap_quizzes_imported";
+const STORAGE_KEY_EDIT     = "quizzap_edit_quiz";
+const STORAGE_KEY_SOURCE   = "quizzap_edit_source";
+const STORAGE_KEY_PLAY     = "quizzap_play_quiz";
+
 const loaderStates = [
     ["","",""],[".",  "",""],["..","",""],["...","",""],
     ["...",".",""],[  "...","..",""],["...","...",""],
@@ -63,11 +68,11 @@ function showNotification(message, type = "info") {
 }
 
 function getQuizzes() {
-    return JSON.parse(localStorage.getItem("quizzap_quizzes_imported") || "[]");
+    return JSON.parse(localStorage.getItem(STORAGE_KEY_IMPORTED) || "[]");
 }
 
 function saveQuizzes(quizzes) {
-    localStorage.setItem("quizzap_quizzes_imported", JSON.stringify(quizzes));
+    localStorage.setItem(STORAGE_KEY_IMPORTED, JSON.stringify(quizzes));
 }
 
 function formatDate(iso) {
@@ -88,16 +93,16 @@ function importFiles(files) {
             return;
         }
 
-        const reader = new FileReader();
-        reader.onload = (e) => {
+        const reader    = new FileReader();
+        reader.onload   = (e) => {
             try {
                 const data     = JSON.parse(e.target.result);
                 const quizzes  = getQuizzes();
                 const now      = new Date().toISOString();
-                const quizName = data.questions?.[0]?.text?.trim() || file.name.replace(".json", "");
+                const quizName = data.name || data.questions?.[0]?.text?.trim() || file.name.replace(".json", "");
 
                 const quiz = {
-                    id:         data.id || Date.now().toString() + Math.random().toString(36).slice(2),
+                    id:         data.id || (Date.now().toString() + Math.random().toString(36).slice(2)),
                     name:       quizName,
                     createdAt:  data.createdAt || now,
                     modifiedAt: now,
@@ -120,7 +125,7 @@ function importFiles(files) {
             pending--;
             if (pending === 0) finish();
         };
-        reader.onerror = () => {
+        reader.onerror  = () => {
             errors++;
             pending--;
             if (pending === 0) finish();
@@ -158,6 +163,7 @@ function createCard(quiz, index) {
             <p class="CardMeta">importé le <span>${date}</span></p>
         </div>
         <div class="CardFooter">
+            <button class="CardAction play">jouer</button>
             <button class="CardAction edit">modifier</button>
             <button class="CardAction download">télécharger</button>
         </div>
@@ -170,11 +176,17 @@ function createCard(quiz, index) {
         confirmModal.style.pointerEvents = "all";
     });
 
+    card.querySelector(".CardAction.play").addEventListener("click", (e) => {
+        e.stopPropagation();
+        localStorage.setItem(STORAGE_KEY_PLAY, JSON.stringify(quiz));
+        window.open("../QuizzPlayer/QuizzPlayer.html", "_self");
+    });
+
     card.querySelector(".CardAction.edit").addEventListener("click", (e) => {
         e.stopPropagation();
-        localStorage.setItem("quizzap_edit_quiz", JSON.stringify(quiz));
-        localStorage.setItem("quizzap_edit_source", "imported");
-        window.open("/src/scenes/QuizzCreator/QuizzCreator.html", "_self");
+        localStorage.setItem(STORAGE_KEY_EDIT, JSON.stringify(quiz));
+        localStorage.setItem(STORAGE_KEY_SOURCE, "imported");
+        window.open("../QuizzCreator/QuizzCreator.html", "_self");
     });
 
     card.querySelector(".CardAction.download").addEventListener("click", (e) => {

@@ -3,11 +3,16 @@ const LOADER_FRAME_INTERVAL_MS = 50;
 const ANIMATION_DELAY_MS       = 10;
 const TRANSITION_DURATION_MS   = 300;
 const MAX_ANSWERS              = 6;
+const MIN_ANSWERS_MULTIPLE     = 2;
 
 const TYPE_MULTIPLE  = "multiple";
 const TYPE_VRAI_FAUX = "vrai/faux";
 const TYPE_OUVERTE   = "ouverte";
 const SETTINGS_TYPES = [TYPE_MULTIPLE, TYPE_VRAI_FAUX, TYPE_OUVERTE];
+
+const STORAGE_KEY_CREATED = "quizzap_quizzes_created";
+const STORAGE_KEY_EDIT    = "quizzap_edit_quiz";
+const STORAGE_KEY_SOURCE  = "quizzap_edit_source";
 
 let running              = { value: true };
 let seconds_passed       = false;
@@ -16,7 +21,7 @@ let loader_sections;
 let questionCount;
 let currentQuestionIndex = 0;
 let notificationTimeout;
-let currentEditingId     = null;
+let editingQuizId        = null;
 
 const settings_button_status = [false, false, false];
 const questionsData          = [];
@@ -53,6 +58,7 @@ const answerPlace     = document.getElementById("answer_place");
 const addAnswerButton = document.getElementById("add_answer");
 const notification    = document.getElementById("notification");
 const confirmModal    = document.getElementById("confirm_modal");
+const quizTitleInput  = document.getElementById("quiz_title_input");
 
 
 function sleep(ms) {
@@ -80,7 +86,6 @@ function hideLoaderIfReady() {
     }
 }
 
-
 function showNotification(message, type = "info") {
     notification.textContent     = message;
     notification.className       = `Notification ${type}`;
@@ -92,6 +97,19 @@ function showNotification(message, type = "info") {
         notification.style.opacity   = "0";
         notification.style.transform = "translateX(-50%) translateY(20px)";
     }, 2800);
+}
+
+function goBack() {
+    const source = localStorage.getItem(STORAGE_KEY_SOURCE);
+    localStorage.removeItem(STORAGE_KEY_EDIT);
+    localStorage.removeItem(STORAGE_KEY_SOURCE);
+    if (source === "imported") {
+        window.open("../QuizzBrowser/QuizzBrowser.html", "_self");
+    } else if (source === "created") {
+        window.open("../QuizzManager/QuizzManager.html", "_self");
+    } else {
+        window.open("../../index.html", "_self");
+    }
 }
 
 
@@ -115,8 +133,8 @@ function saveCurrentQuestion() {
     const q = questionsData[currentQuestionIndex];
     if (!q) return;
 
-    q.text = questionInput.value;
-    q.type = getCurrentType();
+    q.text    = questionInput.value;
+    q.type    = getCurrentType();
     q.answers = getAllAnswerOptions().map(option => ({
         text:      option.querySelector(".AnswerInput")?.value || "",
         isCorrect: option.classList.contains("correct")
@@ -126,11 +144,66 @@ function saveCurrentQuestion() {
     if (openInput) q.expectedAnswer = openInput.value;
 }
 
+function validateQuiz() {
+    const emptyQuestions = questionsData.filter(q => q.text.trim() === "");
+    if (emptyQuestions.length > 0) {
+        showNotification(`${emptyQuestions.length} question(s) sans texte !`, "error");
+        return false;
+    }
+
+    const invalid = questionsData.filter(q => {
+        if (q.type === TYPE_MULTIPLE) {
+            return q.answers.length < MIN_ANSWERS_MULTIPLE || !q.answers.some(a => a.isCorrect);
+        }
+        if (q.type === TYPE_VRAI_FAUX) {
+            return !q.answers.some(a => a.isCorrect);
+        }
+        if (q.type === TYPE_OUVERTE) {
+            return !q.expectedAnswer || q.expectedAnswer.trim() === "";
+        }
+        return false;
+    });
+
+    if (invalid.length > 0) {
+        const index = questionsData.indexOf(invalid[0]);
+        showNotification(`Question ${index + 1} : incomplète ou sans bonne réponse`, "error");
+        switchToQuestion(index);
+        return false;
+    }
+
+    return true;
+}
+
+function persistQuiz() {
+    const title = quizTitleInput.value.trim() || "Quizz sans titre";
+    const now   = new Date().toISOString();
+
+    const quiz = {
+        id:         editingQuizId || (Date.now().toString() + Math.random().toString(36).slice(2)),
+        name:       title,
+        createdAt:  now,
+        modifiedAt: now,
+        questions:  questionsData
+    };
+
+    const stored  = JSON.parse(localStorage.getItem(STORAGE_KEY_CREATED) || "[]");
+    const idx     = stored.findIndex(q => q.id === quiz.id);
+    if (idx !== -1) {
+        stored[idx] = { ...stored[idx], ...quiz, modifiedAt: now };
+    } else {
+        stored.push(quiz);
+    }
+    localStorage.setItem(STORAGE_KEY_CREATED, JSON.stringify(stored));
+
+    return quiz;
+}
+
+
 function loadQuestion(index) {
     const q = questionsData[index];
     if (!q) return;
 
-    questionInput.value = q.text;
+    questionInput.value      = q.text;
     toolbarTitle.textContent = `Question N°${index + 1}`;
 
     SETTINGS_TYPES.forEach((type, i) => {
@@ -154,7 +227,6 @@ function switchToQuestion(index) {
 
     loadQuestion(index);
 }
-
 
 function animateAnswerIn(option) {
     option.style.position  = "relative";
@@ -215,21 +287,20 @@ function applyTypeUI(type, savedAnswers = [], savedExpectedAnswer = "") {
         leftColumn.style.display  = "none";
         rightColumn.style.display = "none";
 
-        const wrapper = document.createElement("div");
+        const wrapper    = document.createElement("div");
         wrapper.className = "OpenAnswerWrapper";
         wrapper.id        = "open_answer_wrapper";
 
-        const label = document.createElement("p");
+        const label       = document.createElement("p");
         label.textContent = "Réponse attendue";
 
-        const input = document.createElement("input");
-        input.type        = "text";
-        input.id          = "open_answer_input";
-        input.className   = "OpenAnswerInput";
-        input.maxLength   = 20;
-        input.placeholder = "Un seul mot...";
-        input.value       = savedExpectedAnswer;
-
+        const input         = document.createElement("input");
+        input.type          = "text";
+        input.id            = "open_answer_input";
+        input.className     = "OpenAnswerInput";
+        input.maxLength     = 20;
+        input.placeholder   = "Un seul mot...";
+        input.value         = savedExpectedAnswer;
         input.addEventListener("input", () => {
             input.value = input.value.replace(/\s+/g, "");
         });
@@ -244,60 +315,79 @@ function applyTypeUI(type, savedAnswers = [], savedExpectedAnswer = "") {
         addAnswerButton.disabled = true;
         addAnswerButton.classList.add("disabled");
 
-        const vraiData = savedAnswers[0] || { text: "Vrai", isCorrect: false };
-        const fauxData = savedAnswers[1] || { text: "Faux", isCorrect: false };
-
+        const vraiData   = savedAnswers[0] || { text: "Vrai", isCorrect: false };
+        const fauxData   = savedAnswers[1] || { text: "Faux", isCorrect: false };
         const vraiOption = createAnswerOption(1, vraiData.text, vraiData.isCorrect, false, true);
         const fauxOption = createAnswerOption(2, fauxData.text, fauxData.isCorrect, false, true);
 
         leftColumn.appendChild(vraiOption);
         rightColumn.appendChild(fauxOption);
-
         setTimeout(() => {
             animateAnswerIn(vraiOption);
             animateAnswerIn(fauxOption);
         }, ANIMATION_DELAY_MS);
-        return;
+
+    } else {
+        addAnswerButton.disabled = false;
+        addAnswerButton.classList.remove("disabled");
+
+        savedAnswers.forEach((ans, i) => {
+            const option       = createAnswerOption(i + 1, ans.text, ans.isCorrect, true, false);
+            const targetColumn = i % 2 === 0 ? leftColumn : rightColumn;
+            targetColumn.appendChild(option);
+            setTimeout(() => animateAnswerIn(option), ANIMATION_DELAY_MS);
+        });
     }
-
-    addAnswerButton.disabled = false;
-    addAnswerButton.classList.remove("disabled");
-
-    savedAnswers.forEach((answer, i) => {
-        const option       = createAnswerOption(i + 1, answer.text, answer.isCorrect, true, false);
-        const targetColumn = (i + 1) % 2 === 1 ? leftColumn : rightColumn;
-        targetColumn.appendChild(option);
-        setTimeout(() => animateAnswerIn(option), ANIMATION_DELAY_MS);
-    });
 }
 
 function setQuestionType(type) {
-    saveCurrentQuestion();
-    const q = questionsData[currentQuestionIndex];
-    if (!q) return;
-    q.type = type;
+    const q    = questionsData[currentQuestionIndex];
+    q.type     = type;
+
+    if (type === TYPE_VRAI_FAUX) {
+        q.answers = [
+            { text: "Vrai", isCorrect: false },
+            { text: "Faux", isCorrect: false }
+        ];
+    } else {
+        q.answers = [];
+    }
+    q.expectedAnswer = "";
 
     leftColumn.innerHTML  = "";
     rightColumn.innerHTML = "";
-
-    applyTypeUI(type, q.answers, q.expectedAnswer || "");
+    applyTypeUI(type, q.answers, "");
 }
 
-function deleteAnswer(answerOption) {
-    answerOption.style.opacity   = "0";
-    answerOption.style.flex      = "unset";
-    answerOption.style.minHeight = "0";
-    answerOption.style.overflow  = "hidden";
+function deleteAnswer(answer) {
+    answer.style.zIndex    = "-1";
+    answer.style.position  = "unset";
+    answer.style.flex      = "unset";
+    answer.style.minHeight = "0";
+    answer.style.overflow  = "unset";
+    answer.style.opacity   = "0";
+    answer.style.height    = "0";
 
     setTimeout(() => {
-        answerOption.remove();
-        const allOptions = getAllAnswerOptions();
-        allOptions.forEach((opt, i) => {
-            opt.id               = `Answer${i + 1}`;
-            const p              = opt.querySelector("p");
-            if (p) p.textContent = i + 1;
-        });
+        answer.remove();
+        updateAnswerNumbers();
     }, TRANSITION_DURATION_MS);
+}
+
+function updateAnswerNumbers() {
+    const allAnswers = getAllAnswerOptions();
+    allAnswers.forEach((answer, index) => {
+        const nmbElement     = answer.querySelector("p");
+        const expectedNumber = index + 1;
+        answer.id = `Answer${expectedNumber}`;
+        if (nmbElement && nmbElement.textContent !== String(expectedNumber)) {
+            nmbElement.style.opacity = "0";
+            setTimeout(() => {
+                nmbElement.textContent   = expectedNumber;
+                nmbElement.style.opacity = "1";
+            }, TRANSITION_DURATION_MS);
+        }
+    });
 }
 
 function setupAnswerDeletion() {
@@ -305,10 +395,8 @@ function setupAnswerDeletion() {
         column.addEventListener("click", (event) => {
             const button = event.target.closest(".ExitButton");
             if (!button) return;
-
             const answerOption = button.closest(".AnswerOption");
             if (!answerOption) return;
-
             button.classList.add("active");
             deleteAnswer(answerOption);
         });
@@ -320,15 +408,12 @@ function setupCorrectAnswerToggle() {
         column.addEventListener("click", (event) => {
             if (event.target.closest(".ExitButton")) return;
             if (event.target.tagName === "TEXTAREA") return;
-
             const answerOption = event.target.closest(".AnswerOption");
             if (!answerOption) return;
-
             answerOption.classList.toggle("correct");
         });
     });
 }
-
 
 function createMiniQuestion(questionNumber) {
     const div     = document.createElement("div");
@@ -424,6 +509,32 @@ function setupQuestionDeletion() {
     });
 }
 
+function loadEditQuiz() {
+    const raw = localStorage.getItem(STORAGE_KEY_EDIT);
+    if (!raw) return false;
+
+    const quiz = JSON.parse(raw);
+    editingQuizId = quiz.id;
+
+    if (quizTitleInput) quizTitleInput.value = quiz.name || "";
+
+    questionsViewer.querySelectorAll(".QuestionMini").forEach(m => m.remove());
+    questionsData.length = 0;
+
+    quiz.questions.forEach((q, i) => {
+        questionsData.push(q);
+        const mini = createMiniQuestion(i + 1);
+        questionsViewer.insertBefore(mini, addObject);
+        setTimeout(() => {
+            mini.style.height    = "15%";
+            mini.style.opacity   = "1";
+            mini.style.transform = "";
+        }, ANIMATION_DELAY_MS + i * 30);
+    });
+
+    return true;
+}
+
 
 document.querySelector(".SmallSettings").addEventListener("click", (event) => {
     const currentSettingsButton = event.target.closest(".SettingsButton");
@@ -475,56 +586,21 @@ document.getElementById("add_question").addEventListener("click", () => {
 document.getElementById("save_quizz").addEventListener("click", () => {
     saveCurrentQuestion();
 
-    const emptyQuestions = questionsData.filter(q => q.text.trim() === "");
-    if (emptyQuestions.length > 0) {
-        showNotification(`${emptyQuestions.length} question(s) sans texte !`, "error");
-        return;
-    }
+    if (!validateQuiz()) return;
 
-    const noCorrectAnswer = questionsData.filter(q =>
-        q.type === TYPE_MULTIPLE &&
-        (q.answers.length === 0 || !q.answers.some(a => a.isCorrect))
-    );
-    if (noCorrectAnswer.length > 0) {
-        showNotification(`${noCorrectAnswer.length} question(s) sans bonne réponse cochée !`, "error");
-        return;
-    }
+    const quiz = persistQuiz();
 
-    const now        = new Date().toISOString();
-    const quizName   = questionsData[0]?.text?.trim() || "Quizz sans titre";
-    const storeKey   = (localStorage.getItem("quizzap_edit_source") === "imported") ? "quizzap_quizzes_imported" : "quizzap_quizzes_created";
-    const quizzes    = JSON.parse(localStorage.getItem(storeKey) || "[]");
-
-    if (currentEditingId) {
-        const idx = quizzes.findIndex(q => q.id === currentEditingId);
-        if (idx !== -1) {
-            quizzes[idx] = { ...quizzes[idx], name: quizName, modifiedAt: now, questions: questionsData };
-        } else {
-            quizzes.push({ id: currentEditingId, name: quizName, createdAt: now, modifiedAt: now, questions: questionsData });
-        }
-    } else {
-        currentEditingId = Date.now().toString();
-        quizzes.push({ id: currentEditingId, name: quizName, createdAt: now, modifiedAt: now, questions: questionsData });
-    }
-
-    localStorage.setItem(storeKey, JSON.stringify(quizzes));
-    localStorage.removeItem("quizzap_edit_source");
-
-    const quizzExport = {
-        id:        currentEditingId,
-        createdAt: now,
-        questions: questionsData
-    };
-
-    const blob = new Blob([JSON.stringify(quizzExport, null, 2)], { type: "application/json" });
+    const blob = new Blob([JSON.stringify(quiz, null, 2)], { type: "application/json" });
     const url  = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href     = url;
-    link.download = "quizz.json";
+    link.download = `${quiz.name}.json`;
     link.click();
     URL.revokeObjectURL(url);
 
-    showNotification("Enregistrement du quizz...", "success");
+    showNotification("Quizz sauvegardé !", "success");
+
+    editingQuizId = quiz.id;
 });
 
 document.getElementById("abort_quizz").addEventListener("click", () => {
@@ -533,7 +609,7 @@ document.getElementById("abort_quizz").addEventListener("click", () => {
 });
 
 document.getElementById("confirm_yes").addEventListener("click", () => {
-    window.open("../../index.html", "_self");
+    goBack();
 });
 
 document.getElementById("confirm_no").addEventListener("click", () => {
@@ -560,48 +636,23 @@ window.addEventListener("load", () => {
     pageLoaded = true;
     hideLoaderIfReady();
 
-    const editData = localStorage.getItem("quizzap_edit_quiz");
+    const wasEditing = loadEditQuiz();
 
-    if (editData) {
-        localStorage.removeItem("quizzap_edit_quiz");
-        const editQuiz = JSON.parse(editData);
-        currentEditingId = editQuiz.id;
-
-        questionsViewer.querySelectorAll(".QuestionMini").forEach(m => m.remove());
-        questionsData.length = 0;
-
-        editQuiz.questions.forEach((q, i) => {
-            questionsData.push(q);
-            const mini = createMiniQuestion(i + 1);
-            questionsViewer.insertBefore(mini, addObject);
-            setTimeout(() => {
-                mini.style.height    = "15%";
-                mini.style.opacity   = "1";
-                mini.style.transform = "";
-            }, ANIMATION_DELAY_MS + i * 30);
-        });
-
-        currentQuestionIndex = 0;
-        questionCount        = editQuiz.questions.length + 1;
-
-        setTimeout(() => {
-            const firstMini = questionsViewer.querySelector(".QuestionMini");
-            if (firstMini) firstMini.classList.add("current");
-            loadQuestion(0);
-        }, ANIMATION_DELAY_MS + editQuiz.questions.length * 30 + 50);
-
-    } else {
+    if (!wasEditing) {
         questionsData.push(createQuestionData());
-        questionCount = questionsViewer.querySelectorAll(".QuestionMini").length + 1;
-
-        const firstMini = questionsViewer.querySelector(".QuestionMini");
-        if (firstMini) firstMini.classList.add("current");
-
-        settings_button_status[0] = true;
-        document.getElementById("0").classList.add("active");
     }
+
+    questionCount = questionsViewer.querySelectorAll(".QuestionMini").length + 1;
+
+    const firstMini = questionsViewer.querySelector(".QuestionMini");
+    if (firstMini) firstMini.classList.add("current");
+
+    settings_button_status[0] = true;
+    document.getElementById("0").classList.add("active");
+
+    if (wasEditing) loadQuestion(0);
 
     setupQuestionDeletion();
     setupAnswerDeletion();
     setupCorrectAnswerToggle();
-});
+}); 

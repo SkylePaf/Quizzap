@@ -26,21 +26,15 @@
                 align-items: center;
                 height: 100vh;
                 width: 100vw;
-
                 padding: 0;
                 margin: 0;
             }
 
             .Loader {
                 z-index: 1000;
-
-                margin: 0;
-                padding: 0;
-
+                position: fixed;
+                inset: 0;
                 transition: all 0.3s ease;
-                height: 100vh;
-                width: 100vw;
-
                 display: flex;
                 justify-content: center;
                 align-items: center;
@@ -50,22 +44,12 @@
 
             .Loader > div {
                 transition: all 0.3s ease;
-
-                margin: 0;
-                padding: 0;
-
                 text-align: center;
-                justify-content: center;
-                align-items: center;
-
                 position: relative;
                 width: 30%;
                 top: -5%;
-
                 height: 5%;
-
                 font-size: 100px;
-
                 text-shadow: white 0px 0px 20px;
             }
 
@@ -120,6 +104,7 @@
             </header>
 
             <footer class="MenuSection" id="toolbar">
+                <input type="text" id="quiz_title_input" maxlength="50" placeholder="Titre du quizz..." />
                 <button class="MenuButtons" id="save_quizz">Save</button>
                 <button class="MenuButtons" id="abort_quizz">Abort</button>
             </footer>
