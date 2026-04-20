@@ -1,0 +1,440 @@
+@font-face {
+    font-family: font1;
+    src: url("../../assets/main_font_1.ttf");
+}
+
+* {
+    font-family: font1;
+    color: white;
+    user-select: none;
+    box-sizing: border-box;
+}
+
+body {
+    cursor: default;
+    margin: 0;
+    padding: 0;
+    background-color: #2f2f2f;
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1f1f1f;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #515151;
+}
+
+.box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+    margin: 0;
+    padding: 0;
+}
+
+.Loader {
+    z-index: 1000;
+    position: fixed;
+    inset: 0;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #2f2f2f;
+    flex-direction: column;
+}
+
+.Loader>div {
+    transition: all 0.3s ease;
+    text-align: center;
+    position: relative;
+    width: 30%;
+    top: -5%;
+    height: 5%;
+    font-size: 100px;
+    text-shadow: white 0px 0px 20px;
+}
+
+#page_wrapper {
+    position: absolute;
+    inset: 3% 5%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+#page_header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    height: 60px;
+    flex-shrink: 0;
+}
+
+#back_button {
+    transition: all 0.3s ease;
+    cursor: pointer;
+    background-color: #151515;
+    border-top: #515151 solid 2px;
+    border-left: #515151 solid 2px;
+    border-right: #000 solid 2px;
+    border-bottom: #000 solid 2px;
+    padding: 8px 20px;
+    font-size: medium;
+    letter-spacing: 3px;
+    height: 100%;
+}
+
+#back_button:hover {
+    text-shadow: white 0 0 8px;
+    letter-spacing: 6px;
+    cursor: pointer;
+}
+
+#back_button:active {
+    transform: translateY(2px);
+}
+
+#page_title {
+    flex: 1;
+    background-color: #272727;
+    border-top: #515151 solid 2px;
+    border-left: #515151 solid 2px;
+    border-right: #000 solid 2px;
+    border-bottom: #000 solid 2px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: x-large;
+    letter-spacing: 8px;
+    text-shadow: white 0 0 5px;
+    -webkit-text-stroke: white 0.5px;
+    color: #c8c8c8;
+}
+
+#quiz_count_badge {
+    background-color: #151515;
+    border-top: #515151 solid 2px;
+    border-left: #515151 solid 2px;
+    border-right: #000 solid 2px;
+    border-bottom: #000 solid 2px;
+    height: 100%;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: small;
+    letter-spacing: 3px;
+    color: #616161;
+}
+
+#quiz_grid {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    align-content: start;
+    padding-right: 4px;
+}
+
+.QuizCard {
+    transition: all 0.3s ease;
+    background-color: #272727;
+    border-top: #515151 solid 2px;
+    border-left: #515151 solid 2px;
+    border-right: #000 solid 2px;
+    border-bottom: #000 solid 2px;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    transform: translateY(10px);
+}
+
+.QuizCard.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.QuizCard:hover {
+    box-shadow: #000 3px 3px 8px;
+    transform: translateX(-3px) translateY(-3px);
+}
+
+.CardHeader {
+    background-color: #1a1a1a;
+    border-bottom: #000 solid 2px;
+    box-shadow: #000 0 0 5px inset;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.CardTitle {
+    font-size: medium;
+    letter-spacing: 2px;
+    color: #c8c8c8;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    flex: 1;
+    margin: 0;
+    padding: 0;
+}
+
+.CardDeleteBtn {
+    transition: all 0.3s ease;
+    background: transparent;
+    border: none;
+    color: #515151;
+    font-size: 110%;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.CardDeleteBtn:hover {
+    color: red;
+    text-shadow: red 0 0 8px;
+    transform: scale(1.4) rotate(90deg);
+}
+
+.CardDeleteBtn:active {
+    transform: scale(1.1) rotate(180deg);
+}
+
+.CardBody {
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+}
+
+.CardMeta {
+    font-size: small;
+    letter-spacing: 2px;
+    color: #515151;
+    margin: 0;
+    padding: 0;
+}
+
+.CardMeta span {
+    color: #888;
+}
+
+.CardFooter {
+    display: flex;
+    border-top: #1a1a1a solid 2px;
+}
+
+.CardAction {
+    transition: all 0.3s ease;
+    flex: 1;
+    background-color: #1f1f1f;
+    border: none;
+    border-right: #111 solid 2px;
+    padding: 10px;
+    font-size: small;
+    letter-spacing: 2px;
+    color: #616161;
+    cursor: pointer;
+}
+
+.CardAction:last-child {
+    border-right: none;
+}
+
+.CardAction:hover {
+    color: white;
+    text-shadow: white 0 0 6px;
+    background-color: #2a2a2a;
+}
+
+.CardAction:active {
+    transform: translateY(2px);
+}
+
+.CardAction.edit:hover {
+    color: #9999ff;
+    text-shadow: #5555cc 0 0 8px;
+}
+
+.CardAction.download:hover {
+    color: #88ffbb;
+    text-shadow: #00bb44 0 0 8px;
+}
+
+#empty_state {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    height: 100%;
+    text-align: center;
+    grid-column: 1 / -1;
+}
+
+#empty_state p {
+    font-size: x-large;
+    letter-spacing: 6px;
+    color: #000000;
+    text-shadow: #000000 0 0 10px;
+    margin: 0;
+    padding: 0;
+}
+
+#empty_state small {
+    font-size: small;
+    letter-spacing: 3px;
+    color: #171717;
+}
+
+#go_create_btn {
+    transition: all 0.3s ease;
+    cursor: pointer;
+    background-color: #151515;
+    border-top: #515151 solid 2px;
+    border-left: #515151 solid 2px;
+    border-right: #000 solid 2px;
+    border-bottom: #000 solid 2px;
+    padding: 12px 28px;
+    font-size: medium;
+    letter-spacing: 4px;
+    color: #616161;
+}
+
+#go_create_btn:hover {
+    color: white;
+    text-shadow: white 0 0 8px;
+    letter-spacing: 8px;
+}
+
+#go_create_btn:active {
+    transform: translateY(2px);
+}
+
+.Notification {
+    position: fixed;
+    bottom: 5%;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s ease;
+    padding: 10px 24px;
+    font-size: large;
+    letter-spacing: 4px;
+    background-color: #1e1e1e;
+    border-top: #515151 solid 2px;
+    border-left: #515151 solid 2px;
+    border-right: #000 solid 2px;
+    border-bottom: #000 solid 2px;
+    z-index: 9999;
+    white-space: nowrap;
+}
+
+.Notification.error {
+    border-top-color: #cc0000;
+    border-left-color: #cc0000;
+    box-shadow: #aa0000 0 0 12px;
+    color: #ffaaaa;
+    text-shadow: #cc0000 0 0 8px;
+}
+
+.Notification.success {
+    border-top-color: #00bb44;
+    border-left-color: #00bb44;
+    box-shadow: #009933 0 0 12px;
+    color: #88ffbb;
+    text-shadow: #00bb44 0 0 8px;
+}
+
+#confirm_modal {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.75);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9998;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s ease;
+}
+
+.ConfirmBox {
+    background-color: #1e1e1e;
+    border-top: #515151 solid 2px;
+    border-left: #515151 solid 2px;
+    border-right: #000 solid 2px;
+    border-bottom: #000 solid 2px;
+    box-shadow: 0 0 30px black;
+    padding: 40px 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+}
+
+.ConfirmBox>p {
+    font-size: x-large;
+    letter-spacing: 4px;
+    color: #cccccc;
+    margin: 0;
+    text-shadow: white 0 0 5px;
+}
+
+.ConfirmButtons {
+    display: flex;
+    gap: 24px;
+}
+
+.ConfirmButtons>button {
+    font-size: large;
+    letter-spacing: 4px;
+    padding: 10px 28px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: #151515;
+    color: #aaaaaa;
+    border-top: #515151 solid 2px;
+    border-left: #515151 solid 2px;
+    border-right: #000 solid 2px;
+    border-bottom: #000 solid 2px;
+}
+
+#confirm_yes:hover {
+    border-top-color: #cc0000;
+    border-left-color: #cc0000;
+    color: #ff8888;
+    text-shadow: red 0 0 8px;
+    box-shadow: #aa0000 0 0 8px inset;
+}
+
+#confirm_no:hover {
+    border-top-color: #00bb44;
+    border-left-color: #00bb44;
+    color: #88ffbb;
+    text-shadow: #00bb44 0 0 8px;
+    box-shadow: #009933 0 0 8px inset;
+}
+
+.ConfirmButtons>button:active {
+    transform: translateX(2px) translateY(2px);
+    box-shadow: none;
+}

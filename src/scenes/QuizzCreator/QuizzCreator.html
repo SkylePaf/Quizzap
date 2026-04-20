@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Quizzap Quizz Creator</title>
+        <link rel="stylesheet" href="style.css" />
+        <script src="index.js" defer></script>
+        <style>
+            * {
+                font-family: font1;
+                background-color: transparent;
+            }
+
+            body {
+                cursor: default;
+                margin: 0;
+                padding: 0;
+            }
+
+            .box {
+                user-select: none;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                width: 100vw;
+
+                padding: 0;
+                margin: 0;
+            }
+
+            .Loader {
+                z-index: 1000;
+
+                margin: 0;
+                padding: 0;
+
+                transition: all 0.3s ease;
+                height: 100vh;
+                width: 100vw;
+
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                background-color: #2f2f2f;
+                flex-direction: column;
+            }
+
+            .Loader > div {
+                transition: all 0.3s ease;
+
+                margin: 0;
+                padding: 0;
+
+                text-align: center;
+                justify-content: center;
+                align-items: center;
+
+                position: relative;
+                width: 30%;
+                top: -5%;
+
+                height: 5%;
+
+                font-size: 100px;
+
+                text-shadow: white 0px 0px 20px;
+            }
+
+            @font-face {
+                font-family: font1;
+                src: url("../../assets/main_font_1.ttf");
+            }
+        </style>
+    </head>
+
+    <body>
+        <main class="box">
+            <div class="Loader" id="loader">
+                <div id="l1"></div>
+                <div id="l2"></div>
+                <div id="l3"></div>
+            </div>
+
+            <header id="work_interface">
+                <section class="MenuSection" id="work_place">
+                    <div class="MenuSection" id="current_question_toolbar">
+                        <p>Question N°1</p>
+                    </div>
+                    <div class="MenuSection" id="question_editor">
+                        <section class="QuestionPlace">
+                            <textarea class="QuestionInput" maxlength="99" placeholder="Ecrire la question ici..."></textarea>
+                        </section>
+                        <section class="SmallSettings">
+                            <button id="0" class="SettingsButton">multiple</button>
+                            <button id="1" class="SettingsButton">vrai/faux</button>
+                            <button id="2" class="SettingsButton">ouverte</button>
+                            <button id="add_answer" class="SettingsAddButton">+</button>
+                        </section>
+                        <section class="AnswerPlace" id="answer_place">
+                            <div class="AnswersColumns" id="left_column"></div>
+                            <div class="AnswersColumns" id="right_column"></div>
+                        </section>
+                    </div>
+                </section>
+
+                <section class="MenuSection" id="questions_viewer">
+                    <div class="QuestionMini">
+                        <section class="MiniQuestionHeader">
+                            <button class="ExitButton">X</button>
+                            <p class="QuestionTitle">Question N°1</p>
+                        </section>
+                    </div>
+                    <div class="AddObject" id="add_question">
+                        <p class="Plus">+</p>
+                    </div>
+                </section>
+            </header>
+
+            <footer class="MenuSection" id="toolbar">
+                <button class="MenuButtons" id="save_quizz">Save</button>
+                <button class="MenuButtons" id="abort_quizz">Abort</button>
+            </footer>
+
+            <div class="Notification" id="notification"></div>
+
+            <div id="confirm_modal">
+                <div class="ConfirmBox">
+                    <p>Abandonner le quizz ?</p>
+                    <div class="ConfirmButtons">
+                        <button id="confirm_yes">Oui</button>
+                        <button id="confirm_no">Non</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </body>
+
+</html>

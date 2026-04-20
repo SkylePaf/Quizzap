@@ -1,0 +1,757 @@
+* {
+  scrollbar-color: #000000 #1f1f1f;
+  scrollbar-width: thin;
+}
+
+.MenuSection, .AnswerOption {
+  transition: all 0.3s ease;
+
+  border-top: #515151 solid;
+  border-left: #515151 solid;
+  border-right: #000000 solid;
+  border-bottom: #000000 solid;
+
+  background-color: #272727;
+
+  justify-content: center;
+  align-items: center;
+}
+
+.MenuSection:hover, .AnswerOption:hover {
+  box-shadow: #000000 3px 3px 5px;
+  transform: translateX(-3px) translateY(-3px);
+}
+
+button {
+  background-color: #151515;
+}
+
+.MenuButtons {
+  transition: all 0.3s ease;
+
+  position: relative;
+  height: 6vh;
+  width: 100%;
+  text-shadow: rgba(255, 255, 255, 0) 0 0 10px;
+  font-family: font1;
+}
+
+.MenuButtons:hover {
+  text-shadow: white 0 0 10px;
+  height: 6vh;
+  cursor: pointer;
+  letter-spacing: 12px;
+  box-shadow: #000000 0 0 5px;
+}
+
+.MenuButtons:active {
+  transform: translateY(3px);
+}
+
+header {
+  margin: 0;
+  padding: 0;
+
+  position: absolute;
+  top: 3%;
+  bottom: 15%;
+  width: 90%;
+
+  display: flex;
+}
+
+header > * {
+  padding: 5px;
+}
+
+header > #work_place {
+  width: 65%;
+  margin-right: 10px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+header > #questions_viewer {
+  width: 35%;
+}
+
+.QuestionMini {
+  transition: all 0.3s ease;
+
+  position: relative;
+
+  border-top: #515151 solid;
+  border-left: #515151 solid;
+  border-right: #000000 solid;
+  border-bottom: #000000 solid;
+
+  background-color: #232323;
+  margin-bottom: 2%;
+
+  height: 15%;
+  justify-content: center;
+  align-items: center;
+
+  cursor: pointer;
+}
+
+.QuestionMini:hover {
+  box-shadow: #000000 3px 3px 5px;
+  transform: translateX(-3px) translateY(-3px);
+}
+
+.QuestionMini.current {
+  border-left-color: #5555cc;
+  border-top-color: #5555cc;
+  background-color: #1e1e30;
+  box-shadow: #3333aa 0 0 8px inset;
+}
+
+.QuestionMini.current .QuestionTitle {
+  color: #9999ff;
+  text-shadow: #5555cc 0px 0px 5px;
+}
+
+#questions_viewer {
+  cursor: crosshair;
+
+  overflow-y: scroll;
+  overflow-x: hidden;
+
+  display: block;
+  justify-content: center;
+  align-items: center;
+}
+
+.MiniQuestionHeader {
+  display: flex;
+
+  margin: 0;
+  padding: 0;
+
+  height: 20%;
+  width: 100%;
+  background-color: #181818;
+
+  border-bottom: black solid;
+  box-shadow: #000000 0px 0px 5px inset;
+}
+
+.ExitButton {
+  transition: all 0.3s ease;
+
+  background-color: transparent;
+  border: none;
+
+  color: red;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+
+  padding: 0;
+  margin: 0;
+  margin-left: 10px;
+
+  font-size: 120%;
+
+  height: 100%;
+  width: 20px;
+
+  z-index: 3;
+}
+
+.ExitButton:hover {
+  cursor: pointer;
+  transform: scale(170%) rotate(90deg);
+
+  color: #ff0000c9;
+  text-shadow: red 0px 0px 10px;
+}
+
+.ExitButton:active,
+.ExitButton.active {
+  transform: scale(120%) rotate(180deg);
+  background-color: transparent;
+
+  color: #ffffffc9;
+  text-shadow: red 0px 0px 5px;
+}
+
+.QuestionTitle {
+  overflow: hidden;
+  transition: all 0.3s ease;
+  font-size: 110%;
+
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  padding: 0;
+  margin: 0;
+  margin-right: 5%;
+
+  flex: 1;
+
+  z-index: 0;
+
+  color: #616161;
+  text-shadow: rgb(0, 0, 0) 0px 0px 3px;
+}
+
+.QuestionTitle:hover {
+  color: #d5d5d5;
+  text-shadow: rgb(179, 179, 179) 0px 0px 3px;
+  transform: scale(110%) translateX(-10px);
+}
+
+.AddObject {
+  transition: all 0.3s ease;
+
+  padding: 0;
+  position: relative;
+  height: 15%;
+  border-top: white dashed 3px;
+  border-left: white dashed 3px;
+  border-right: #8c8c8c dashed 3px;
+  border-bottom: #8c8c8c dashed 3px;
+
+  margin: 1%;
+  margin-right: 1%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.AddObject > p {
+  transition: all 0.3s ease;
+
+  font-family: font1;
+
+  position: relative;
+  top: -5%;
+
+  padding: 0;
+  margin: 0;
+
+  transform: scale(600%);
+  color: #4f4f4f;
+  text-shadow: #8c8c8c 0px 0px 3px;
+  -webkit-text-stroke: #8c8c8c 0.5px;
+}
+
+.AddObject:hover > p {
+  color: #8c8c8c;
+  text-shadow: white 0px 0px 5px;
+  -webkit-text-stroke: white 0.5px;
+  transform: scale(700%);
+  cursor: pointer;
+}
+
+.AddObject:active > p {
+  transform: scale(500%);
+  color: #8c8c8c;
+  text-shadow: #4f4f4f 0px 0px 3px;
+  -webkit-text-stroke: #4f4f4f 0.5px;
+}
+
+.AddObject:hover {
+  box-shadow: rgb(114, 114, 114) 0px 0px 10px inset;
+  filter: drop-shadow(0 5px 5px black);
+}
+
+.AddObject:active {
+  box-shadow: rgb(114, 114, 114) 0px 0px 15px inset;
+  filter: none;
+  transform: translateY(5px);
+}
+
+#current_question_toolbar {
+  position: relative;
+
+  height: 9%;
+  width: 90%;
+  margin-bottom: 1%;
+
+  align-items: center;
+  justify-content: center;
+  display: flex;
+
+  background-color: rgb(164, 164, 164);
+  text-shadow: rgb(70, 70, 70) 0 0 10px;
+  color: rgb(197, 197, 197);
+
+  box-shadow: rgb(48, 48, 48) 0 0 10px inset;
+}
+
+#current_question_toolbar > p {
+  font-size: xx-large;
+}
+
+#current_question_toolbar:hover {
+  text-shadow: white 0 0 5px;
+  color: white;
+  transform: translateY(-5px) scale(110%);
+}
+
+#question_editor {
+  padding: 0%;
+  margin: 0%;
+
+  position: relative;
+  width: 90%;
+  height: 80%;
+  align-items: center;
+  justify-content: center;
+
+  background-color: #1f1f1f;
+
+  z-index: 3;
+}
+
+.QuestionPlace {
+  transition: all 0.3s ease;
+
+  position: relative;
+
+  padding: 0%;
+  margin: 0%;
+
+  height: 10%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background-color: #181818;
+
+  border-bottom: black solid;
+  box-shadow: #000000 0px 0px 5px inset;
+}
+
+textarea {
+  display: block;
+  max-height: 100%;
+  position: relative;
+
+  min-height: 2em;
+  min-width: 6em;
+  text-align: center;
+  font-size: x-large;
+  overflow-wrap: anywhere;
+  background-color: transparent;
+  outline: none;
+  border: none;
+  color: inherit;
+  font-family: inherit;
+  cursor: text;
+}
+
+.QuestionInput {
+  width: 50%;
+  height: 50%;
+  min-height: 2em;
+  min-width: 10em;
+
+  font-size: large;
+}
+
+footer {
+  margin: 0;
+  padding: 1%;
+
+  display: flex;
+  position: absolute;
+  bottom: 3%;
+  width: 88%;
+}
+
+footer > button {
+  font-size: x-large;
+  letter-spacing: 10px;
+}
+
+.SmallSettings {
+  border: rgb(164, 164, 164) solid 2px;
+  box-shadow: rgb(164, 164, 164) 0 0 5px inset;
+  background-color: rgb(85, 85, 85);
+
+  position: relative;
+  margin: 1%;
+
+  height: 6%;
+
+  align-items: center;
+  justify-content: center;
+  display: flex;
+}
+
+.SettingsButton, .SettingsAddButton {
+  cursor: pointer;
+
+  transition: all 0.3s ease;
+
+  padding: 0;
+
+  height: 60%;
+  width: 25%;
+
+  border: unset;
+  border: white solid 1px;
+  background-color: #5a5a5a;
+
+  box-shadow: white 3px 3px 0;
+
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: rgb(174, 174, 174);
+}
+
+.SettingsButton:hover, .SettingsAddButton {
+  color: white;
+  background-color: rgb(138, 138, 138);
+  text-shadow: white 0 0 5px;
+}
+
+.SettingsButton:active, .SettingsButton.active, .SettingsAddButton:active {
+  transform: translateX(3px) translateY(3px);
+  box-shadow: white 0 0 0;
+  color: white;
+  text-shadow: white 0 0 5px;
+  background-color: rgb(138, 138, 138);
+  cursor: default;
+}
+
+.AnswerPlace {
+  position: relative;
+
+  margin-left: 1%;
+  margin-right: 1%;
+
+  align-items: center;
+  justify-content: center;
+  display: flex;
+
+  height: 81%;
+}
+
+.AnswersColumns {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 50%;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.AnswerInput {
+  width: 70%;
+  min-height: 2em;
+  min-width: 6em;
+}
+
+.AnswerOption {
+  position: relative;
+
+  margin: 3%;
+  background-color: #181818;
+
+  align-items: center;
+  justify-content: center;
+  display: flex;
+
+  cursor: pointer;
+}
+
+.AnswerOption > textarea {
+  cursor: text;
+}
+
+.AnswerInput.readonly {
+  cursor: pointer;
+  pointer-events: none;
+}
+
+.AnswerOption.correct {
+  border-top-color: #00bb44;
+  border-left-color: #00bb44;
+  box-shadow: #009933 0 0 10px inset;
+  background-color: #0d1f12;
+}
+
+.AnswerOption.correct > .AnswerInput {
+  color: #88ffbb;
+}
+
+.AnswerOption.correct > p {
+  color: #00bb44;
+}
+
+.AnswerOption > p {
+  position: absolute;
+  top: 4px;
+  left: 6px;
+  margin: 0;
+  color: #515151;
+  transition: color 0.3s ease;
+}
+
+.AnswerOption > .ExitButton {
+  position: absolute;
+  top: 2px;
+  right: 6px;
+  padding: 0;
+  margin: 0;
+  height: auto;
+  width: auto;
+}
+
+#add_answer {
+  z-index: 4;
+  margin-left: 5%;
+  width: 20px;
+  font-size: large;
+  transition: all 0.3s ease;
+}
+
+#add_answer.disabled,
+#add_answer:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+#save_quizz {
+  margin-right: 2%;
+  font-size: 200%;
+  text-shadow: rgb(91, 91, 91) 0px 0px 3px;
+}
+
+#save_quizz:hover {
+  text-shadow: green 0px 0px 10px;
+  font-size: 300%;
+  -webkit-text-stroke: green 2px;
+}
+
+#abort_quizz {
+  font-size: 200%;
+  text-shadow: rgb(91, 91, 91) 0px 0px 3px;
+}
+
+#abort_quizz:hover {
+  text-shadow: red 0px 0px 10px;
+  font-size: 300%;
+  -webkit-text-stroke: red 2px;
+}
+
+.OpenAnswerWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+
+  width: 100%;
+  height: 100%;
+}
+
+.OpenAnswerWrapper > p {
+  font-family: font1;
+  font-size: large;
+  letter-spacing: 4px;
+  color: #616161;
+  margin: 0;
+}
+
+.OpenAnswerInput {
+  font-family: font1;
+  font-size: xx-large;
+  letter-spacing: 6px;
+  text-align: center;
+
+  background-color: transparent;
+  border: none;
+  border-bottom: #515151 solid 2px;
+  outline: none;
+  color: #d5d5d5;
+
+  width: 50%;
+  padding: 8px 0;
+
+  transition: border-color 0.3s ease, text-shadow 0.3s ease;
+}
+
+.OpenAnswerInput:focus {
+  border-bottom-color: #9999ff;
+  text-shadow: #5555cc 0 0 8px;
+  color: #ccccff;
+}
+
+.OpenAnswerInput::placeholder {
+  color: #3a3a3a;
+  font-size: large;
+  letter-spacing: 3px;
+}
+
+.Notification {
+  position: fixed;
+  bottom: 11%;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+
+  opacity: 0;
+  pointer-events: none;
+
+  transition: all 0.3s ease;
+
+  padding: 10px 24px;
+  font-family: font1;
+  font-size: large;
+  letter-spacing: 4px;
+
+  background-color: #1e1e1e;
+  border-top: #515151 solid 2px;
+  border-left: #515151 solid 2px;
+  border-right: #000 solid 2px;
+  border-bottom: #000 solid 2px;
+
+  z-index: 9999;
+  white-space: nowrap;
+}
+
+.Notification.success {
+  border-top-color: #00bb44;
+  border-left-color: #00bb44;
+  box-shadow: #009933 0 0 12px;
+  color: #88ffbb;
+  text-shadow: #00bb44 0 0 8px;
+}
+
+.Notification.error {
+  border-top-color: #cc0000;
+  border-left-color: #cc0000;
+  box-shadow: #aa0000 0 0 12px;
+  color: #ffaaaa;
+  text-shadow: #cc0000 0 0 8px;
+}
+
+.Notification.info {
+  border-top-color: #4488cc;
+  border-left-color: #4488cc;
+  box-shadow: #2255aa 0 0 12px;
+  color: #aaccff;
+  text-shadow: #4488cc 0 0 8px;
+}
+
+#confirm_modal {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  z-index: 9998;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+
+.ConfirmBox {
+  background-color: #1e1e1e;
+
+  border-top: #515151 solid;
+  border-left: #515151 solid;
+  border-right: #000 solid;
+  border-bottom: #000 solid;
+
+  box-shadow: 0 0 30px black;
+
+  padding: 40px 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+}
+
+.ConfirmBox > p {
+  font-family: font1;
+  font-size: x-large;
+  letter-spacing: 4px;
+  color: #cccccc;
+  margin: 0;
+  text-shadow: white 0 0 5px;
+}
+
+.ConfirmButtons {
+  display: flex;
+  gap: 24px;
+}
+
+.ConfirmButtons > button {
+  font-family: font1;
+  font-size: large;
+  letter-spacing: 4px;
+  padding: 10px 28px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: #151515;
+  color: #aaaaaa;
+  border-top: #515151 solid 2px;
+  border-left: #515151 solid 2px;
+  border-right: #000 solid 2px;
+  border-bottom: #000 solid 2px;
+}
+
+#confirm_yes:hover {
+  border-top-color: #cc0000;
+  border-left-color: #cc0000;
+  color: #ff8888;
+  text-shadow: red 0 0 8px;
+  box-shadow: #aa0000 0 0 8px inset;
+}
+
+#confirm_no:hover {
+  border-top-color: #00bb44;
+  border-left-color: #00bb44;
+  color: #88ffbb;
+  text-shadow: #00bb44 0 0 8px;
+  box-shadow: #009933 0 0 8px inset;
+}
+
+.ConfirmButtons > button:active {
+  transform: translateX(2px) translateY(2px);
+  box-shadow: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color: #f6f6f6;
+    background-color: #2f2f2f;
+  }
+
+  a:hover {
+    color: #24c8db;
+  }
+
+  input,
+  button {
+    color: #ffffff;
+    background-color: #0f0f0f98;
+  }
+
+  button:active {
+    background-color: #0f0f0f69;
+  }
+}
