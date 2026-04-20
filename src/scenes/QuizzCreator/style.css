@@ -3,7 +3,8 @@
   scrollbar-width: thin;
 }
 
-.MenuSection, .AnswerOption {
+.MenuSection,
+.AnswerOption {
   transition: all 0.3s ease;
 
   border-top: #515151 solid;
@@ -17,7 +18,8 @@
   align-items: center;
 }
 
-.MenuSection:hover, .AnswerOption:hover {
+.MenuSection:hover,
+.AnswerOption:hover {
   box-shadow: #000000 3px 3px 5px;
   transform: translateX(-3px) translateY(-3px);
 }
@@ -60,11 +62,11 @@ header {
   display: flex;
 }
 
-header > * {
+header>* {
   padding: 5px;
 }
 
-header > #work_place {
+header>#work_place {
   width: 65%;
   margin-right: 10px;
 
@@ -74,7 +76,7 @@ header > #work_place {
   align-items: center;
 }
 
-header > #questions_viewer {
+header>#questions_viewer {
   width: 35%;
 }
 
@@ -228,7 +230,7 @@ header > #questions_viewer {
   align-items: center;
 }
 
-.AddObject > p {
+.AddObject>p {
   transition: all 0.3s ease;
 
   font-family: font1;
@@ -245,7 +247,7 @@ header > #questions_viewer {
   -webkit-text-stroke: #8c8c8c 0.5px;
 }
 
-.AddObject:hover > p {
+.AddObject:hover>p {
   color: #8c8c8c;
   text-shadow: white 0px 0px 5px;
   -webkit-text-stroke: white 0.5px;
@@ -253,7 +255,7 @@ header > #questions_viewer {
   cursor: pointer;
 }
 
-.AddObject:active > p {
+.AddObject:active>p {
   transform: scale(500%);
   color: #8c8c8c;
   text-shadow: #4f4f4f 0px 0px 3px;
@@ -289,7 +291,7 @@ header > #questions_viewer {
   box-shadow: rgb(48, 48, 48) 0 0 10px inset;
 }
 
-#current_question_toolbar > p {
+#current_question_toolbar>p {
   font-size: xx-large;
 }
 
@@ -373,7 +375,7 @@ footer {
   width: 88%;
 }
 
-footer > button {
+footer>button {
   font-size: x-large;
   letter-spacing: 10px;
 }
@@ -406,7 +408,7 @@ footer > button {
   border-top-color: #9999ff;
   border-left-color: #9999ff;
   color: #ccccff;
-  text-shadow: #5555cc 0 0 6px;
+  text-shadow: #38388f 0 0 6px;
   box-shadow: #3333aa 0 0 8px inset;
 }
 
@@ -430,7 +432,8 @@ footer > button {
   display: flex;
 }
 
-.SettingsButton, .SettingsAddButton {
+.SettingsButton,
+.SettingsAddButton {
   cursor: pointer;
 
   transition: all 0.3s ease;
@@ -454,13 +457,16 @@ footer > button {
   color: rgb(174, 174, 174);
 }
 
-.SettingsButton:hover, .SettingsAddButton {
+.SettingsButton:hover,
+.SettingsAddButton {
   color: white;
   background-color: rgb(138, 138, 138);
   text-shadow: white 0 0 5px;
 }
 
-.SettingsButton:active, .SettingsButton.active, .SettingsAddButton:active {
+.SettingsButton:active,
+.SettingsButton.active,
+.SettingsAddButton:active {
   transform: translateX(3px) translateY(3px);
   box-shadow: white 0 0 0;
   color: white;
@@ -512,7 +518,7 @@ footer > button {
   cursor: pointer;
 }
 
-.AnswerOption > textarea {
+.AnswerOption>textarea {
   cursor: text;
 }
 
@@ -528,15 +534,15 @@ footer > button {
   background-color: #0d1f12;
 }
 
-.AnswerOption.correct > .AnswerInput {
+.AnswerOption.correct>.AnswerInput {
   color: #88ffbb;
 }
 
-.AnswerOption.correct > p {
+.AnswerOption.correct>p {
   color: #00bb44;
 }
 
-.AnswerOption > p {
+.AnswerOption>p {
   position: absolute;
   top: 4px;
   left: 6px;
@@ -545,7 +551,7 @@ footer > button {
   transition: color 0.3s ease;
 }
 
-.AnswerOption > .ExitButton {
+.AnswerOption>.ExitButton {
   position: absolute;
   top: 2px;
   right: 6px;
@@ -604,7 +610,7 @@ footer > button {
   height: 100%;
 }
 
-.OpenAnswerWrapper > p {
+.OpenAnswerWrapper>p {
   font-size: large;
   letter-spacing: 4px;
   color: #616161;
@@ -724,7 +730,7 @@ footer > button {
   gap: 28px;
 }
 
-.ConfirmBox > p {
+.ConfirmBox>p {
   font-size: x-large;
   letter-spacing: 4px;
   color: #cccccc;
@@ -737,7 +743,7 @@ footer > button {
   gap: 24px;
 }
 
-.ConfirmButtons > button {
+.ConfirmButtons>button {
   font-size: large;
   letter-spacing: 4px;
   padding: 10px 28px;
@@ -767,7 +773,7 @@ footer > button {
   box-shadow: #009933 0 0 8px inset;
 }
 
-.ConfirmButtons > button:active {
+.ConfirmButtons>button:active {
   transform: translateX(2px) translateY(2px);
   box-shadow: none;
 }
@@ -778,7 +784,8 @@ footer > button {
     background-color: #2f2f2f;
   }
 
-  input, button {
+  input,
+  button {
     color: #ffffff;
     background-color: #0f0f0f98;
   }

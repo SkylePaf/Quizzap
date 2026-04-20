@@ -318,7 +318,7 @@ body {
 }
 
 .OpenPlayerInput::placeholder {
-    color: #2a2a2a;
+    color: #696969;
     font-size: large;
     letter-spacing: 3px;
 }
