@@ -584,7 +584,7 @@ footer>button {
 
 #save_quizz:hover {
   text-shadow: green 0px 0px 10px;
-  font-size: 300%;
+  font-size: 250%;
   -webkit-text-stroke: green 2px;
 }
 
@@ -595,7 +595,7 @@ footer>button {
 
 #abort_quizz:hover {
   text-shadow: red 0px 0px 10px;
-  font-size: 300%;
+  font-size: 250%;
   -webkit-text-stroke: red 2px;
 }
 
