@@ -533,7 +533,7 @@ document.getElementById("abort_quizz").addEventListener("click", () => {
 });
 
 document.getElementById("confirm_yes").addEventListener("click", () => {
-    window.open('/src/index.html', '_self');
+    window.open('/Quizzap/src/index.html', '_self');
 });
 
 document.getElementById("confirm_no").addEventListener("click", () => {
