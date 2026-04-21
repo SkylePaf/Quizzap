@@ -126,7 +126,7 @@ body {
     align-items: center;
     justify-content: center;
     font-size: small;
-    letter-spacingI: 3px;
+    letter-spacing: 3px;
     color: #616161;
 }
 
@@ -153,7 +153,7 @@ body {
     height: 100%;
     width: 100%;
     background-color: #00bb44;
-    transition: width 0.1s linear, background-color 0.5s ease;
+    transition: width 0.1s linear, background-color 10s ease;
     box-shadow: currentColor 0 0 8px;
 }
 
