@@ -160,7 +160,7 @@ body {
 #timer_text {
     width: 48px;
     text-align: right;
-    font-size: large;
+    font-size: large;   
     letter-spacing: 2px;
     color: #888;
     flex-shrink: 0;
