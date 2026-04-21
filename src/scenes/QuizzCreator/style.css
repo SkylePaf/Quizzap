@@ -94,8 +94,9 @@ header>#questions_viewer {
   margin-bottom: 2%;
 
   height: 15%;
-  justify-content: center;
-  align-items: center;
+
+  display: flex;
+  flex-direction: column;
 
   cursor: pointer;
 }
@@ -795,22 +796,52 @@ footer>button {
   }
 }
 .MiniQuestionBody {
-  padding: 4px 10px 6px 10px;
-  font-size: 65%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 10px;
+  overflow: hidden;
+}
+
+.MiniTypeBadge {
+  font-size: 75%;
+  letter-spacing: 2px;
+  color: #383838;
+  text-transform: lowercase;
+  transition: color 0.3s ease;
+  white-space: nowrap;
+}
+
+.MiniDetail {
+  font-size: 80%;
   letter-spacing: 1px;
-  color: #3a3a3a;
+  color: #262626;
+  text-align: center;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  max-width: 100%;
   transition: color 0.3s ease;
 }
 
-.QuestionMini.current .MiniQuestionBody {
-  color: #4444aa;
+.QuestionMini.current .MiniTypeBadge {
+  color: #5555cc;
+  text-shadow: #3333aa 0 0 6px;
 }
 
-.QuestionMini:hover .MiniQuestionBody {
+.QuestionMini.current .MiniDetail {
+  color: #4040aa;
+}
+
+.QuestionMini:hover .MiniTypeBadge {
   color: #555555;
+}
+
+.QuestionMini:hover .MiniDetail {
+  color: #404040;
 }
 
 .MultiCorrectToggle {

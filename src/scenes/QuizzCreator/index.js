@@ -152,22 +152,6 @@ function saveCurrentQuestion() {
     if (openInput) q.expectedAnswer = openInput.value;
 }
 
-function getMiniSummaryText(q) {
-    if (!q) return "";
-    if (q.type === TYPE_OUVERTE) {
-        const answer = q.expectedAnswer?.trim() || "—";
-        return `ouverte  ·  "${answer}"`;
-    }
-    if (q.type === TYPE_VRAI_FAUX) {
-        const correct = q.answers?.find(a => a.isCorrect);
-        return `vrai / faux  ·  ${correct ? correct.text : "—"}`;
-    }
-    const count   = q.answers?.length || 0;
-    const correct = q.answers?.filter(a => a.isCorrect).length || 0;
-    const multi   = q.multipleCorrect ? "  ·  multi" : "";
-    return `multiple  ·  ${count} rép.  ·  ${correct} ✓${multi}`;
-}
-
 function updateMiniSummary(index) {
     const minis = questionsViewer.querySelectorAll(".QuestionMini");
     const mini  = minis[index];
@@ -179,7 +163,32 @@ function updateMiniSummary(index) {
         body.className = "MiniQuestionBody";
         mini.appendChild(body);
     }
-    body.textContent = getMiniSummaryText(questionsData[index]);
+
+    const q = questionsData[index];
+    body.innerHTML = "";
+
+    const badge   = document.createElement("span");
+    const detail  = document.createElement("span");
+    badge.className  = "MiniTypeBadge";
+    detail.className = "MiniDetail";
+
+    if (q.type === TYPE_OUVERTE) {
+        badge.textContent  = "ouverte";
+        const answer       = q.expectedAnswer?.trim() || "—";
+        detail.textContent = `"${answer}"`;
+    } else if (q.type === TYPE_VRAI_FAUX) {
+        badge.textContent  = "vrai / faux";
+        const correct      = q.answers?.find(a => a.isCorrect);
+        detail.textContent = correct ? correct.text : "—";
+    } else {
+        badge.textContent  = q.multipleCorrect ? "multiple  ·  multi ✓" : "multiple";
+        const count        = q.answers?.length || 0;
+        const correctCount = q.answers?.filter(a => a.isCorrect).length || 0;
+        detail.textContent = `${count} réponse${count > 1 ? "s" : ""}  ·  ${correctCount} correcte${correctCount > 1 ? "s" : ""}`;
+    }
+
+    body.appendChild(badge);
+    body.appendChild(detail);
 }
 
 function updateAllMiniSummaries() {
