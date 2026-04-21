@@ -535,3 +535,52 @@ body {
     color: #aaccff;
     text-shadow: #4488cc 0 0 8px;
 }
+#answers_area.answers_multi {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: auto;
+}
+
+.MultiHint {
+    grid-column: 1 / -1;
+    font-size: small;
+    letter-spacing: 3px;
+    color: #4488cc;
+    text-shadow: #2255aa 0 0 6px;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+.multi_validate {
+    grid-column: 1 / -1;
+    padding: 14px 40px;
+    font-size: large;
+    letter-spacing: 4px;
+    margin-top: 4px;
+}
+
+.multi_validate:hover:not(:disabled) {
+    border-top-color: #4488cc;
+    border-left-color: #4488cc;
+    color: #aaccff;
+    text-shadow: #4488cc 0 0 8px;
+    box-shadow: #2255aa 0 0 10px inset;
+}
+
+.PlayerAnswer.selected {
+    border-top-color: #4488cc;
+    border-left-color: #4488cc;
+    background-color: #0d1020;
+    color: #aaccff;
+    text-shadow: #4488cc 0 0 8px;
+    box-shadow: #2255aa 0 0 8px inset;
+}
+
+.PlayerAnswer.feedback_missed {
+    border-top-color: #ddaa00;
+    border-left-color: #ddaa00;
+    background-color: #1a1500;
+    color: #ffdd88;
+    text-shadow: #ddaa00 0 0 8px;
+    box-shadow: #aa8800 0 0 8px inset;
+}

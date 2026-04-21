@@ -794,3 +794,65 @@ footer>button {
     background-color: #0f0f0f69;
   }
 }
+.MiniQuestionBody {
+  padding: 4px 10px 6px 10px;
+  font-size: 65%;
+  letter-spacing: 1px;
+  color: #3a3a3a;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: color 0.3s ease;
+}
+
+.QuestionMini.current .MiniQuestionBody {
+  color: #4444aa;
+}
+
+.QuestionMini:hover .MiniQuestionBody {
+  color: #555555;
+}
+
+.MultiCorrectToggle {
+  cursor: pointer;
+
+  transition: all 0.3s ease;
+
+  padding: 0;
+
+  height: 60%;
+  width: auto;
+  min-width: 60px;
+  padding: 0 8px;
+
+  border: white solid 1px;
+  background-color: #3a3a3a;
+
+  box-shadow: white 3px 3px 0;
+
+  z-index: 1;
+  display: none;
+  align-items: center;
+  justify-content: center;
+
+  color: #616161;
+  font-size: 80%;
+  letter-spacing: 1px;
+  margin-left: 4px;
+}
+
+.MultiCorrectToggle:hover {
+  color: #aaccff;
+  background-color: #2a2a4a;
+  text-shadow: #4488cc 0 0 5px;
+}
+
+.MultiCorrectToggle.active {
+  transform: translateX(3px) translateY(3px);
+  box-shadow: #4488cc 0 0 0;
+  color: #aaccff;
+  text-shadow: #4488cc 0 0 8px;
+  background-color: #1a1a3a;
+  border-color: #4488cc;
+  cursor: default;
+}

@@ -14,8 +14,8 @@ const loaderStates = [
     ["","",""],[".",  "",""],["..","",""],["...","",""],
     ["...",".",""],[  "...","..",""],["...","...",""],
     ["...","...","."],[  "...","..",".."],[  "...","...","..."],
-    ["..","...","..."],[  ".","...","..."],["","...","..."],
-    ["","..","..."],[  "",".",  "..."],["","","..."],
+    ["..",  "...","..."],[  ".","...","..."],["","...","..."],
+    ["","..", "..."],[  "",".",  "..."],["","","..."],
     ["","",".."],["","","."],["","",""]
 ];
 
@@ -24,25 +24,25 @@ let seconds_passed = false;
 let pageLoaded     = false;
 let loaderSections;
 
-let quiz                = null;
-let currentIndex        = 0;
-let playerAnswers       = [];
-let timerInterval       = null;
-let timerElapsed        = 0;
-let questionLocked      = false;
+let quiz           = null;
+let currentIndex   = 0;
+let playerAnswers  = [];
+let timerInterval  = null;
+let timerElapsed   = 0;
+let questionLocked = false;
+let selectedSet    = new Set();
 
-const notification      = document.getElementById("notification");
-const pageWrapper       = document.getElementById("page_wrapper");
-const quizTitleDisplay  = document.getElementById("quiz_title_display");
-const progressBadge     = document.getElementById("progress_badge");
-const timerBar          = document.getElementById("timer_bar");
-const timerText         = document.getElementById("timer_text");
-const questionText      = document.getElementById("question_text");
-const answersArea       = document.getElementById("answers_area");
-const resultsOverlay    = document.getElementById("results_overlay");
-const resultsScore      = document.getElementById("results_score");
-const resultsLabel      = document.getElementById("results_label");
-const resultsBreakdown  = document.getElementById("results_breakdown");
+const notification     = document.getElementById("notification");
+const quizTitleDisplay = document.getElementById("quiz_title_display");
+const progressBadge    = document.getElementById("progress_badge");
+const timerBar         = document.getElementById("timer_bar");
+const timerText        = document.getElementById("timer_text");
+const questionText     = document.getElementById("question_text");
+const answersArea      = document.getElementById("answers_area");
+const resultsOverlay   = document.getElementById("results_overlay");
+const resultsScore     = document.getElementById("results_score");
+const resultsLabel     = document.getElementById("results_label");
+const resultsBreakdown = document.getElementById("results_breakdown");
 
 
 function sleep(ms) {
@@ -102,11 +102,11 @@ function stopTimer() {
 }
 
 function updateTimerDisplay() {
-    const remaining    = Math.max(0, TIME_PER_QUESTION_MS - timerElapsed);
-    const fraction     = remaining / TIME_PER_QUESTION_MS;
-    const secondsLeft  = Math.ceil(remaining / 1000);
+    const remaining   = Math.max(0, TIME_PER_QUESTION_MS - timerElapsed);
+    const fraction    = remaining / TIME_PER_QUESTION_MS;
+    const secondsLeft = Math.ceil(remaining / 1000);
 
-    timerBar.style.width = `${fraction * 100}%`;
+    timerBar.style.width  = `${fraction * 100}%`;
     timerText.textContent = secondsLeft;
 
     if (fraction > 0.5) {
@@ -127,17 +127,24 @@ function handleTimeout() {
 }
 
 
-function isAnswerCorrect(question, givenAnswer) {
+function isAnswerCorrectSingle(question, givenAnswer) {
     if (question.type === TYPE_OUVERTE) {
         return givenAnswer.trim().toLowerCase() === question.expectedAnswer.trim().toLowerCase();
     }
-    if (question.type === TYPE_MULTIPLE || question.type === TYPE_VRAI_FAUX) {
-        const correctAnswers = question.answers
-            .filter(a => a.isCorrect)
-            .map(a => a.text.trim().toLowerCase());
-        return correctAnswers.includes(givenAnswer.trim().toLowerCase());
+    const correctAnswers = question.answers
+        .filter(a => a.isCorrect)
+        .map(a => a.text.trim().toLowerCase());
+    return correctAnswers.includes(givenAnswer.trim().toLowerCase());
+}
+
+function isAnswerCorrectMulti(question, selectedValues) {
+    const correctSet  = new Set(question.answers.filter(a => a.isCorrect).map(a => a.text.trim().toLowerCase()));
+    const selectedNorm = new Set([...selectedValues].map(v => v.trim().toLowerCase()));
+    if (correctSet.size !== selectedNorm.size) return false;
+    for (const v of correctSet) {
+        if (!selectedNorm.has(v)) return false;
     }
-    return false;
+    return true;
 }
 
 function handleAnswer(givenAnswer) {
@@ -146,10 +153,28 @@ function handleAnswer(givenAnswer) {
     stopTimer();
 
     const question = quiz.questions[currentIndex];
-    const correct  = isAnswerCorrect(question, givenAnswer);
+    const correct  = isAnswerCorrectSingle(question, givenAnswer);
 
     playerAnswers[currentIndex] = { answered: true, correct, givenAnswer };
     showFeedback(givenAnswer);
+}
+
+function handleMultiValidate() {
+    if (questionLocked) return;
+    if (selectedSet.size === 0) {
+        showNotification("Sélectionne au moins une réponse !", "info");
+        return;
+    }
+
+    questionLocked = true;
+    stopTimer();
+
+    const question  = quiz.questions[currentIndex];
+    const correct   = isAnswerCorrectMulti(question, selectedSet);
+    const givenList = [...selectedSet].join(", ");
+
+    playerAnswers[currentIndex] = { answered: true, correct, givenAnswer: givenList };
+    showFeedbackMulti();
 }
 
 function showFeedback(givenAnswer) {
@@ -173,8 +198,7 @@ function showFeedback(givenAnswer) {
         const openInput = document.getElementById("open_player_input");
         if (openInput) {
             openInput.disabled = true;
-            const correct = playerAnswers[currentIndex]?.correct;
-            openInput.classList.add(correct ? "feedback_correct" : "feedback_wrong");
+            openInput.classList.add(playerAnswers[currentIndex]?.correct ? "feedback_correct" : "feedback_wrong");
         }
         const confirmBtn = document.getElementById("open_confirm_btn");
         if (confirmBtn) confirmBtn.disabled = true;
@@ -183,6 +207,27 @@ function showFeedback(givenAnswer) {
     if (!playerAnswers[currentIndex]?.answered) {
         showNotification("Temps écoulé !", "error");
     }
+
+    setTimeout(() => advanceOrFinish(), FEEDBACK_DURATION_MS);
+}
+
+function showFeedbackMulti() {
+    const question  = quiz.questions[currentIndex];
+    const correctSet = new Set(question.answers.filter(a => a.isCorrect).map(a => a.text.trim().toLowerCase()));
+
+    answersArea.querySelectorAll(".PlayerAnswer.answer_btn").forEach(btn => {
+        btn.disabled = true;
+        const val    = btn.dataset.value?.trim().toLowerCase();
+        const isCorrect = correctSet.has(val);
+        const isSelected = selectedSet.has(btn.dataset.value);
+
+        if (isCorrect && isSelected)  btn.classList.add("feedback_correct");
+        if (isCorrect && !isSelected) btn.classList.add("feedback_missed");
+        if (!isCorrect && isSelected) btn.classList.add("feedback_wrong");
+    });
+
+    const validateBtn = document.getElementById("multi_validate_btn");
+    if (validateBtn) validateBtn.disabled = true;
 
     setTimeout(() => advanceOrFinish(), FEEDBACK_DURATION_MS);
 }
@@ -200,20 +245,24 @@ function advanceOrFinish() {
 function renderQuestion() {
     const question = quiz.questions[currentIndex];
     questionLocked = false;
+    selectedSet    = new Set();
 
-    progressBadge.textContent  = `Q ${currentIndex + 1}/${quiz.questions.length}`;
-    questionText.textContent   = question.text;
+    progressBadge.textContent = `Q ${currentIndex + 1}/${quiz.questions.length}`;
+    questionText.textContent  = question.text;
 
-    answersArea.innerHTML      = "";
-    answersArea.className      = "";
+    answersArea.innerHTML = "";
+    answersArea.className = "";
 
-    if (question.type === TYPE_MULTIPLE) {
+    if (question.type === TYPE_MULTIPLE && question.multipleCorrect) {
+        renderMultiCorrectQuestion(question);
+
+    } else if (question.type === TYPE_MULTIPLE) {
         answersArea.classList.add("answers_grid");
         question.answers.forEach(ans => {
-            const btn           = document.createElement("button");
-            btn.className       = "PlayerAnswer";
-            btn.textContent     = ans.text;
-            btn.dataset.value   = ans.text;
+            const btn         = document.createElement("button");
+            btn.className     = "PlayerAnswer";
+            btn.textContent   = ans.text;
+            btn.dataset.value = ans.text;
             btn.addEventListener("click", () => handleAnswer(ans.text));
             answersArea.appendChild(btn);
         });
@@ -221,10 +270,10 @@ function renderQuestion() {
     } else if (question.type === TYPE_VRAI_FAUX) {
         answersArea.classList.add("answers_vf");
         question.answers.forEach(ans => {
-            const btn           = document.createElement("button");
-            btn.className       = `PlayerAnswer vf_btn ${ans.text.toLowerCase()}`;
-            btn.textContent     = ans.text;
-            btn.dataset.value   = ans.text;
+            const btn         = document.createElement("button");
+            btn.className     = `PlayerAnswer vf_btn ${ans.text.toLowerCase()}`;
+            btn.textContent   = ans.text;
+            btn.dataset.value = ans.text;
             btn.addEventListener("click", () => handleAnswer(ans.text));
             answersArea.appendChild(btn);
         });
@@ -232,13 +281,13 @@ function renderQuestion() {
     } else if (question.type === TYPE_OUVERTE) {
         answersArea.classList.add("answers_open");
 
-        const input         = document.createElement("input");
-        input.type          = "text";
-        input.id            = "open_player_input";
-        input.className     = "OpenPlayerInput";
-        input.maxLength     = 20;
-        input.placeholder   = "Votre réponse...";
-        input.autocomplete  = "off";
+        const input        = document.createElement("input");
+        input.type         = "text";
+        input.id           = "open_player_input";
+        input.className    = "OpenPlayerInput";
+        input.maxLength    = 20;
+        input.placeholder  = "Votre réponse...";
+        input.autocomplete = "off";
         input.addEventListener("input", () => {
             input.value = input.value.replace(/\s+/g, "");
         });
@@ -246,19 +295,53 @@ function renderQuestion() {
             if (e.key === "Enter") confirmOpenAnswer();
         });
 
-        const btn           = document.createElement("button");
-        btn.id              = "open_confirm_btn";
-        btn.className       = "PlayerAnswer open_confirm";
-        btn.textContent     = "valider";
+        const btn       = document.createElement("button");
+        btn.id          = "open_confirm_btn";
+        btn.className   = "PlayerAnswer open_confirm";
+        btn.textContent = "valider";
         btn.addEventListener("click", confirmOpenAnswer);
 
         answersArea.appendChild(input);
         answersArea.appendChild(btn);
-
         setTimeout(() => input.focus(), 50);
     }
 
     startTimer();
+}
+
+function renderMultiCorrectQuestion(question) {
+    answersArea.classList.add("answers_grid", "answers_multi");
+
+    const hint     = document.createElement("p");
+    hint.className = "MultiHint";
+    const count    = question.answers.filter(a => a.isCorrect).length;
+    hint.textContent = `Sélectionne les ${count} bonne${count > 1 ? "s" : ""} réponse${count > 1 ? "s" : ""}`;
+    answersArea.appendChild(hint);
+
+    question.answers.forEach(ans => {
+        const btn         = document.createElement("button");
+        btn.className     = "PlayerAnswer answer_btn";
+        btn.textContent   = ans.text;
+        btn.dataset.value = ans.text;
+        btn.addEventListener("click", () => {
+            if (questionLocked) return;
+            if (selectedSet.has(ans.text)) {
+                selectedSet.delete(ans.text);
+                btn.classList.remove("selected");
+            } else {
+                selectedSet.add(ans.text);
+                btn.classList.add("selected");
+            }
+        });
+        answersArea.appendChild(btn);
+    });
+
+    const validateBtn       = document.createElement("button");
+    validateBtn.id          = "multi_validate_btn";
+    validateBtn.className   = "PlayerAnswer multi_validate";
+    validateBtn.textContent = "valider";
+    validateBtn.addEventListener("click", handleMultiValidate);
+    answersArea.appendChild(validateBtn);
 }
 
 function confirmOpenAnswer() {
@@ -272,11 +355,11 @@ function confirmOpenAnswer() {
 
 function getScoreLabel(score, total) {
     const ratio = score / total;
-    if (ratio === 1)         return "Parfait.";
-    if (ratio >= 0.8)        return "Pas mal du tout.";
-    if (ratio >= 0.6)        return "Bien.";
-    if (ratio >= 0.4)        return "aie aie aie...";
-    if (ratio >= 0.2)        return "Peut mieux faire.";
+    if (ratio === 1)    return "Parfait.";
+    if (ratio >= 0.8)   return "Pas mal du tout.";
+    if (ratio >= 0.6)   return "Bien.";
+    if (ratio >= 0.4)   return "aie aie aie...";
+    if (ratio >= 0.2)   return "Peut mieux faire.";
     return "Skill issues.";
 }
 
@@ -294,8 +377,8 @@ function showResults() {
         const entry     = document.createElement("div");
         entry.className = `BreakdownEntry ${playerAnswers[i]?.correct ? "correct" : "wrong"}`;
 
-        const icon    = playerAnswers[i]?.correct ? "✓" : "✗";
-        const answer  = playerAnswers[i]?.answered
+        const icon   = playerAnswers[i]?.correct ? "✓" : "✗";
+        const answer = playerAnswers[i]?.answered
             ? `"${playerAnswers[i].givenAnswer}"`
             : "— temps écoulé";
 
@@ -312,8 +395,8 @@ function showResults() {
 }
 
 function startGame() {
-    currentIndex  = 0;
-    playerAnswers = [];
+    currentIndex   = 0;
+    playerAnswers  = [];
     questionLocked = false;
 
     resultsOverlay.style.opacity       = "0";

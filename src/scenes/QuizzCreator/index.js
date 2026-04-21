@@ -14,6 +14,12 @@ const STORAGE_KEY_CREATED = "quizzap_quizzes_created";
 const STORAGE_KEY_EDIT    = "quizzap_edit_quiz";
 const STORAGE_KEY_SOURCE  = "quizzap_edit_source";
 
+const TYPE_LABELS = {
+    [TYPE_MULTIPLE]:  "multiple",
+    [TYPE_VRAI_FAUX]: "vrai / faux",
+    [TYPE_OUVERTE]:   "ouverte"
+};
+
 let running              = { value: true };
 let seconds_passed       = false;
 let pageLoaded           = false;
@@ -48,17 +54,18 @@ const loaderStates = [
     ["", "", ""]
 ];
 
-const questionsViewer = document.querySelector("#work_interface #questions_viewer");
-const leftColumn      = document.querySelector("#answer_place #left_column");
-const rightColumn     = document.querySelector("#answer_place #right_column");
-const addObject       = questionsViewer.querySelector(".AddObject");
-const questionInput   = document.querySelector(".QuestionInput");
-const toolbarTitle    = document.querySelector("#current_question_toolbar p");
-const answerPlace     = document.getElementById("answer_place");
-const addAnswerButton = document.getElementById("add_answer");
-const notification    = document.getElementById("notification");
-const confirmModal    = document.getElementById("confirm_modal");
-const quizTitleInput  = document.getElementById("quiz_title_input");
+const questionsViewer    = document.querySelector("#work_interface #questions_viewer");
+const leftColumn         = document.querySelector("#answer_place #left_column");
+const rightColumn        = document.querySelector("#answer_place #right_column");
+const addObject          = questionsViewer.querySelector(".AddObject");
+const questionInput      = document.querySelector(".QuestionInput");
+const toolbarTitle       = document.querySelector("#current_question_toolbar p");
+const answerPlace        = document.getElementById("answer_place");
+const addAnswerButton    = document.getElementById("add_answer");
+const notification       = document.getElementById("notification");
+const confirmModal       = document.getElementById("confirm_modal");
+const quizTitleInput     = document.getElementById("quiz_title_input");
+const multiCorrectToggle = document.getElementById("multi_correct_toggle");
 
 
 function sleep(ms) {
@@ -114,7 +121,7 @@ function goBack() {
 
 
 function createQuestionData() {
-    return { text: "", type: TYPE_MULTIPLE, answers: [], expectedAnswer: "" };
+    return { text: "", type: TYPE_MULTIPLE, answers: [], expectedAnswer: "", multipleCorrect: false };
 }
 
 function getAllAnswerOptions() {
@@ -133,15 +140,50 @@ function saveCurrentQuestion() {
     const q = questionsData[currentQuestionIndex];
     if (!q) return;
 
-    q.text    = questionInput.value;
-    q.type    = getCurrentType();
-    q.answers = getAllAnswerOptions().map(option => ({
+    q.text            = questionInput.value;
+    q.type            = getCurrentType();
+    q.multipleCorrect = (q.type === TYPE_MULTIPLE) && multiCorrectToggle.classList.contains("active");
+    q.answers         = getAllAnswerOptions().map(option => ({
         text:      option.querySelector(".AnswerInput")?.value || "",
         isCorrect: option.classList.contains("correct")
     }));
 
     const openInput = document.getElementById("open_answer_input");
     if (openInput) q.expectedAnswer = openInput.value;
+}
+
+function getMiniSummaryText(q) {
+    if (!q) return "";
+    if (q.type === TYPE_OUVERTE) {
+        const answer = q.expectedAnswer?.trim() || "—";
+        return `ouverte  ·  "${answer}"`;
+    }
+    if (q.type === TYPE_VRAI_FAUX) {
+        const correct = q.answers?.find(a => a.isCorrect);
+        return `vrai / faux  ·  ${correct ? correct.text : "—"}`;
+    }
+    const count   = q.answers?.length || 0;
+    const correct = q.answers?.filter(a => a.isCorrect).length || 0;
+    const multi   = q.multipleCorrect ? "  ·  multi" : "";
+    return `multiple  ·  ${count} rép.  ·  ${correct} ✓${multi}`;
+}
+
+function updateMiniSummary(index) {
+    const minis = questionsViewer.querySelectorAll(".QuestionMini");
+    const mini  = minis[index];
+    if (!mini) return;
+
+    let body = mini.querySelector(".MiniQuestionBody");
+    if (!body) {
+        body           = document.createElement("div");
+        body.className = "MiniQuestionBody";
+        mini.appendChild(body);
+    }
+    body.textContent = getMiniSummaryText(questionsData[index]);
+}
+
+function updateAllMiniSummaries() {
+    questionsData.forEach((_, i) => updateMiniSummary(i));
 }
 
 function validateQuiz() {
@@ -186,8 +228,8 @@ function persistQuiz() {
         questions:  questionsData
     };
 
-    const stored  = JSON.parse(localStorage.getItem(STORAGE_KEY_CREATED) || "[]");
-    const idx     = stored.findIndex(q => q.id === quiz.id);
+    const stored = JSON.parse(localStorage.getItem(STORAGE_KEY_CREATED) || "[]");
+    const idx    = stored.findIndex(q => q.id === quiz.id);
     if (idx !== -1) {
         stored[idx] = { ...stored[idx], ...quiz, modifiedAt: now };
     } else {
@@ -211,6 +253,9 @@ function loadQuestion(index) {
         document.getElementById(String(i)).classList.toggle("active", settings_button_status[i]);
     });
 
+    multiCorrectToggle.classList.toggle("active", !!q.multipleCorrect);
+    multiCorrectToggle.style.display = (q.type === TYPE_MULTIPLE) ? "" : "none";
+
     leftColumn.innerHTML  = "";
     rightColumn.innerHTML = "";
 
@@ -219,6 +264,7 @@ function loadQuestion(index) {
 
 function switchToQuestion(index) {
     saveCurrentQuestion();
+    updateMiniSummary(currentQuestionIndex);
     currentQuestionIndex = index;
 
     questionsViewer.querySelectorAll(".QuestionMini").forEach((m, i) => {
@@ -281,13 +327,15 @@ function applyTypeUI(type, savedAnswers = [], savedExpectedAnswer = "") {
     const existingWrapper = document.getElementById("open_answer_wrapper");
     if (existingWrapper) existingWrapper.remove();
 
+    multiCorrectToggle.style.display = (type === TYPE_MULTIPLE) ? "" : "none";
+
     if (type === TYPE_OUVERTE) {
         addAnswerButton.disabled = true;
         addAnswerButton.classList.add("disabled");
         leftColumn.style.display  = "none";
         rightColumn.style.display = "none";
 
-        const wrapper    = document.createElement("div");
+        const wrapper     = document.createElement("div");
         wrapper.className = "OpenAnswerWrapper";
         wrapper.id        = "open_answer_wrapper";
 
@@ -341,8 +389,10 @@ function applyTypeUI(type, savedAnswers = [], savedExpectedAnswer = "") {
 }
 
 function setQuestionType(type) {
-    const q    = questionsData[currentQuestionIndex];
-    q.type     = type;
+    const q  = questionsData[currentQuestionIndex];
+    q.type   = type;
+
+    if (type !== TYPE_MULTIPLE) q.multipleCorrect = false;
 
     if (type === TYPE_VRAI_FAUX) {
         q.answers = [
@@ -420,6 +470,7 @@ function createMiniQuestion(questionNumber) {
     const section = document.createElement("section");
     const button  = document.createElement("button");
     const title   = document.createElement("p");
+    const body    = document.createElement("div");
 
     div.className      = "QuestionMini";
     section.className  = "MiniQuestionHeader";
@@ -427,10 +478,13 @@ function createMiniQuestion(questionNumber) {
     button.textContent = "X";
     title.className    = "QuestionTitle";
     title.textContent  = `Question N°${questionNumber}`;
+    body.className     = "MiniQuestionBody";
+    body.textContent   = "multiple  ·  0 rép.  ·  0 ✓";
 
     section.appendChild(button);
     section.appendChild(title);
     div.appendChild(section);
+    div.appendChild(body);
 
     div.style.opacity   = "0";
     div.style.height    = "0";
@@ -536,6 +590,12 @@ function loadEditQuiz() {
 }
 
 
+multiCorrectToggle.addEventListener("click", () => {
+    multiCorrectToggle.classList.toggle("active");
+    const q = questionsData[currentQuestionIndex];
+    if (q) q.multipleCorrect = multiCorrectToggle.classList.contains("active");
+});
+
 document.querySelector(".SmallSettings").addEventListener("click", (event) => {
     const currentSettingsButton = event.target.closest(".SettingsButton");
     if (!currentSettingsButton) return;
@@ -567,6 +627,7 @@ document.getElementById("add_answer").addEventListener("click", () => {
 
 document.getElementById("add_question").addEventListener("click", () => {
     saveCurrentQuestion();
+    updateMiniSummary(currentQuestionIndex);
 
     const nextNumber  = questionsViewer.querySelectorAll(".QuestionMini").length + 1;
     const newQuestion = createMiniQuestion(nextNumber);
@@ -585,6 +646,7 @@ document.getElementById("add_question").addEventListener("click", () => {
 
 document.getElementById("save_quizz").addEventListener("click", () => {
     saveCurrentQuestion();
+    updateMiniSummary(currentQuestionIndex);
 
     if (!validateQuiz()) return;
 
@@ -599,7 +661,6 @@ document.getElementById("save_quizz").addEventListener("click", () => {
     URL.revokeObjectURL(url);
 
     showNotification("Quizz sauvegardé !", "success");
-
     editingQuizId = quiz.id;
 });
 
@@ -649,10 +710,14 @@ window.addEventListener("load", () => {
 
     settings_button_status[0] = true;
     document.getElementById("0").classList.add("active");
+    multiCorrectToggle.style.display = "";
 
-    if (wasEditing) loadQuestion(0);
+    if (wasEditing) {
+        loadQuestion(0);
+        updateAllMiniSummaries();
+    }
 
     setupQuestionDeletion();
     setupAnswerDeletion();
     setupCorrectAnswerToggle();
-}); 
+});

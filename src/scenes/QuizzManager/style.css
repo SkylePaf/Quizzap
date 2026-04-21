@@ -244,14 +244,18 @@ body {
 .CardAction {
     transition: all 0.3s ease;
     flex: 1;
+    min-width: 0;
     background-color: #1f1f1f;
     border: none;
     border-right: #111 solid 2px;
-    padding: 10px;
+    padding: 10px 4px;
     font-size: small;
-    letter-spacing: 2px;
+    letter-spacing: 0;
     color: #616161;
     cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .CardAction:last-child {
@@ -262,6 +266,7 @@ body {
     color: white;
     text-shadow: white 0 0 6px;
     background-color: #2a2a2a;
+    letter-spacing: 1px;
 }
 
 .CardAction:active {
