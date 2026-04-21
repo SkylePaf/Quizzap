@@ -157,20 +157,25 @@ function updateMiniSummary(index) {
     const mini  = minis[index];
     if (!mini) return;
 
-    let body = mini.querySelector(".MiniQuestionBody");
-    if (!body) {
-        body           = document.createElement("div");
-        body.className = "MiniQuestionBody";
-        mini.appendChild(body);
+    const body   = mini.querySelector(".MiniQuestionBody");
+    if (!body) return;
+
+    let badge  = body.querySelector(".MiniTypeBadge");
+    let detail = body.querySelector(".MiniDetail");
+
+    if (!badge) {
+        badge          = document.createElement("div");
+        badge.className = "MiniTypeBadge";
+        body.appendChild(badge);
+    }
+    if (!detail) {
+        detail          = document.createElement("div");
+        detail.className = "MiniDetail";
+        body.appendChild(detail);
     }
 
     const q = questionsData[index];
-    body.innerHTML = "";
-
-    const badge   = document.createElement("span");
-    const detail  = document.createElement("span");
-    badge.className  = "MiniTypeBadge";
-    detail.className = "MiniDetail";
+    if (!q) return;
 
     if (q.type === TYPE_OUVERTE) {
         badge.textContent  = "ouverte";
@@ -186,9 +191,6 @@ function updateMiniSummary(index) {
         const correctCount = q.answers?.filter(a => a.isCorrect).length || 0;
         detail.textContent = `${count} réponse${count > 1 ? "s" : ""}  ·  ${correctCount} correcte${correctCount > 1 ? "s" : ""}`;
     }
-
-    body.appendChild(badge);
-    body.appendChild(detail);
 }
 
 function updateAllMiniSummaries() {
@@ -480,6 +482,8 @@ function createMiniQuestion(questionNumber) {
     const button  = document.createElement("button");
     const title   = document.createElement("p");
     const body    = document.createElement("div");
+    const badge   = document.createElement("div");
+    const detail  = document.createElement("div");
 
     div.className      = "QuestionMini";
     section.className  = "MiniQuestionHeader";
@@ -488,8 +492,14 @@ function createMiniQuestion(questionNumber) {
     title.className    = "QuestionTitle";
     title.textContent  = `Question N°${questionNumber}`;
     body.className     = "MiniQuestionBody";
-    body.textContent   = "multiple  ·  0 rép.  ·  0 ✓";
+    badge.className    = "MiniTypeBadge";
+    detail.className   = "MiniDetail";
 
+    badge.textContent  = "multiple";
+    detail.textContent = "0 réponse  ·  0 correcte";
+
+    body.appendChild(badge);
+    body.appendChild(detail);
     section.appendChild(button);
     section.appendChild(title);
     div.appendChild(section);
@@ -649,6 +659,7 @@ document.getElementById("add_question").addEventListener("click", () => {
         newQuestion.style.height    = "15%";
         newQuestion.style.opacity   = "1";
         newQuestion.style.transform = "";
+        updateMiniSummary(newIndex);
         switchToQuestion(newIndex);
     }, ANIMATION_DELAY_MS);
 });
@@ -723,8 +734,8 @@ window.addEventListener("load", () => {
 
     if (wasEditing) {
         loadQuestion(0);
-        updateAllMiniSummaries();
     }
+    updateAllMiniSummaries();
 
     setupQuestionDeletion();
     setupAnswerDeletion();

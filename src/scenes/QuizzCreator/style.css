@@ -801,24 +801,24 @@ footer>button {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 5px;
   padding: 6px 10px;
   overflow: hidden;
 }
 
 .MiniTypeBadge {
-  font-size: 75%;
+  font-size: 72%;
   letter-spacing: 2px;
-  color: #383838;
-  text-transform: lowercase;
+  color: #555555;
   transition: color 0.3s ease;
   white-space: nowrap;
+  text-align: center;
 }
 
 .MiniDetail {
-  font-size: 80%;
+  font-size: 78%;
   letter-spacing: 1px;
-  color: #262626;
+  color: #444444;
   text-align: center;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -828,20 +828,36 @@ footer>button {
 }
 
 .QuestionMini.current .MiniTypeBadge {
-  color: #5555cc;
+  color: #6666dd;
   text-shadow: #3333aa 0 0 6px;
 }
 
 .QuestionMini.current .MiniDetail {
-  color: #4040aa;
+  color: #5555bb;
 }
 
-.QuestionMini:hover .MiniTypeBadge {
-  color: #555555;
+.QuestionMini.current .MiniQuestionBody::after {
+  content: "· modification en cours ·";
+  display: block;
+  font-size: 58%;
+  letter-spacing: 2px;
+  color: #4444aa;
+  text-align: center;
+  margin-top: 4px;
+  animation: editing_pulse 2s ease-in-out infinite;
 }
 
-.QuestionMini:hover .MiniDetail {
-  color: #404040;
+@keyframes editing_pulse {
+  0%, 100% { opacity: 0.4; }
+  50%       { opacity: 1;   }
+}
+
+.QuestionMini:hover:not(.current) .MiniTypeBadge {
+  color: #707070;
+}
+
+.QuestionMini:hover:not(.current) .MiniDetail {
+  color: #606060;
 }
 
 .MultiCorrectToggle {
