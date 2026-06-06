@@ -45,7 +45,7 @@ You control circles on a grid full of squares. Goal: eat every harmless squares 
 
 ## Architecture
 
-Aucuns moteurs. Aucunes frameworks. Entièrement conçu from scratch:
+Aucuns moteur. Aucunes framework. Entièrement conçu from scratch:
 
 ```
 ├── assets/
