@@ -1,25 +1,25 @@
 # Quizzap
 
-> The easy way to make quizz for others to do.
+> Une application quizz simple et efficace.
 
-**Quizz maker · Quizz manager · Quizz importer**  
-Built entirely in vanilla HTML/CSS/JS - no framework, no engine.
+**Créateur de quizz · Gestionaire de quizz · Importeur de quizz · Joueur de quizz**  
+²Développé entièrement en HTML/CSS/JS - sans framework, sans moteur.
 
-[▶ Use Online](https://skylepaf.github.io/Quizzap/web_browser/index.html)
+[▶ Essayer En ligne](https://skylepaf.github.io/Quizzap/web_browser/index.html)
 
-*Data will be save in the browser localstorage.*
+*Les données seront enregistrer dans le local storage du navigateur.*
 
 ---
 
 ## Screenshots
 
-| Main Menu | Gameplay — World 2 |
+| Createur de quizz | Joueur de quizz |
 |---|---|
-| ![menu](screenshots/main_menu.png) | ![world2](screenshots/lvlshowcase1.png) |
+| ![menu](screenshots/quizz_maker.png) | ![world2](screenshots/quizz_player.png) |
 
-| Gameplay - World 7 | Gameplay - World 6 |
+| Gestion de quizz | Importeur de quizz |
 |---|---|
-| ![world5](screenshots/lvlshowcase3.png) | ![world8](screenshots/lvlshowcase2.png) |
+| ![world5](screenshots/quizz_manager.png) | ![world8](screenshots/quizz_importer.png) |
 
 ---
 
@@ -34,79 +34,124 @@ You control circles on a grid full of squares. Goal: eat every harmless squares 
 
 ---
 
-## Features
+## Contenu
 
-- **8 worlds × 5 levels** — 40 hand-crafted levels
-- **8 distinct enemy types** — each world brings a new AI behavior
-- **4 powerups** — Laser, Explosion, Teleportation, Wall Protection
-- **Dynamic grid scaling** — grid size grows, shrinks to give a new experience each lvls
-- **Performance tracking** — personal best recorded per level and more
-- **Accessibility settings** — Light Mode, independent Music/SFX volume sliders and controls
-- **Adaptive resolution** — zoom factor auto-calculated to fit any screen
+- **Créateur de quizz** — 3 types de question possibles, simple d'utilisation et intuitif, enregistrement en 1 fichier à partager
+- **Gestionnaire de quizz** — modification, suppression de quizz
+- **Importeur de quizz** — possibilité d'importer un fichier quizz (.json)
+- **Joueur de quizz** — jouer n'importe quel quizz avec un temp à parti et un score de fin
 
 ---
 
 ## Architecture
 
-No game engine. No framework. Everything built from scratch:
+Aucuns moteurs. Aucunes frameworks. Entièrement conçu from scratch:
 
 ```
-├── index.html          # game shell — one HTML table = the entire grid
-├── main.js             # game loop, grid generation, input, scoring
-├── enemiesScript.js    # 8 enemy AIs, movement patterns, collision
-├── bonusScript.js      # 4 powerup systems (laser, teleport, explosion...)
-└── levelsData.json     # all 40 levels defined as pure data
+├── assets/
+├── scenes/
+│   ├── QuizzBrowser/
+│   │   ├── index.js # lecture du ficher json importé et extraction des données
+│   │   ├── QuizzBrowser.html # system d'affichage intelligent dynamique au nombre de quizz
+│   │   └── style.css # style orignal dark et élégant
+│   ├── QuizzCreator/
+│   │   ├── index.js # sauvegarde dans un fichier json avec un ID et une structure définie
+│   │   ├── QuizzCreator.html # structure en arbre :  div, footer, section -> autres divs -> ...
+│   │   └── style.css # style orignal dark et élégant
+│   ├── QuizzManager/
+│   │   ├── index.js
+│   │   ├── QuizzManager.html # system d'affichage intelligent dynamique au nombre de quizz
+│   │   └── style.css # style orignal dark et élégant
+│   └── QuizzPlayer/
+│       ├── index.js # calcule de score complet
+│       ├── QuizzPlayer.html # structure générique adapté à tout type de questions
+│       └── style.css # style orignal dark et élégant 
+├── index.html # menu principal menant vers toutes les fonctionnalités
+└── styles.css # style orignal dark et élégant
 ```
 
-The grid is an HTML `<table>`. Every cell = one square. Movement, collision and rendering are handled entirely in vanilla JS.
+L'HTML contient une structure simple et courte `<div>`, `<section>`... Les script gère le reste dynamiquement et les fichiers style ordonne la page.
 
-Levels are **fully data-driven** — a new level is just a JSON entry:
+Les quizz sont 100% gérés en fichiers de données — un quizz se construit de la forme:
 
 ```json
-"lvl1": {
-    "gameMap": {
-        "size": 9,
-        "gameScale": [1, 16]
+{
+  "id": "1780757626080hrmhdw9tbn",
+  "name": "quizz1",
+  "createdAt": "2026-06-06T14:53:46.079Z",
+  "modifiedAt": "2026-06-06T14:53:46.079Z",
+  "questions": [
+    {
+      "text": "",
+      "type": "multiple",
+      "answers": [
+        {
+          "text": "",
+          "isCorrect": true
+        },
+        {
+          "text": "",
+          "isCorrect": false
+        },
+        {
+          "text": "",
+          "isCorrect": false
+        },
+        {
+          "text": "",
+          "isCorrect": false
+        }
+      ],
     },
-    "player": {
-        "pos": { "x": 3, "y": 3 },
-        "size": 1,
-        "color": 0
-    },
-    "gameMapHazards": {}
+    {
+      "text": "",
+      "type": "vrai/faux",
+      "answers": [
+        {
+          "text": "Vrai",
+          "isCorrect": true
+        },
+        {
+          "text": "Faux",
+          "isCorrect": false
+        }
+      ],
+    }
+  ]
 }
 ```
 
-Adding a world = adding a dictionary in the JSON. The engine does the rest.
+L'id est généré grace à une combinaison d'un nombre aléatoire et la date éxacte.
+Pour la suite : 
+- Createur de quizz = CQ
+- Joueur de quizz = JQ
+- Gestion de quizz = GQ
+- Importeur de quizz = IQ
 
 ---
 
-## Controls
+## A savoir
 
-| Action | Keys |
+| Action | solution |
 |--------|------|
-| Move | Z-Q-S-D |
-| Sprint | SHIFT or Right Click |
-| Laser bonus | SHIFT + CTRL |
-| Other bonuses | Left Click |
-| Pause menu | ESCAPE |
+| (Createur de quizz) selectionner la bonne réponse | *cliquer sur la case de la réponse* |
+| (Createur de quizz) difficulté à enregistrer | *vérifié que tout les champs sont rempli et qu'au moins une réponse est définie comme correcte* |
 
 ---
 
 ## Stack
 
-`HTML` `CSS` `JavaScript` — zero dependencies, runs in any browser.  
+`HTML` `CSS` `JavaScript` — pas de dépendances, tourne dans n'importe quel navigateur.  
 
-Packaged as a desktop app with [Electron](https://www.electronjs.org/).  
-To package, go in `/web_app(Electron)` then :  
+Packé en tant qu'application avec [Electron](https://www.electronjs.org/).  
+Pour packer, aller dans `/web_app(Electron)` puis :  
 ```bash
 npm install
 npm run build
 ```
-*The exe file should be in /web_app(Electron)/dist/ .*
+*L'éxecutable devrait se trouver dans /web_app(Electron)/dist/ .*
 ---
 
 ## Credits
 
-Sound effects adapted from **Undertale** (Toby Fox) and **Driverhead**.  
-Code, level design and visuals by **SkylePaf**.
+Code, design and visuals by **SkylePaf**.
