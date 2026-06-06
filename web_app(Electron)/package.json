@@ -1,0 +1,50 @@
+{
+  "name": "quizzap",
+  "version": "1.1.0",
+  "author": {
+    "name": "Skylepaf",
+    "email": "skylepaf@gmail.com"
+  },
+  "description": "Quizzap - Application de quiz",
+  "homepage": "https://github.com/Skylepaf/Eat_Them_All",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder"
+  },
+  "devDependencies": {
+    "electron": "^35.7.5",
+    "electron-builder": "^25.0.0"
+  },
+  "build": {
+    "appId": "com.quizzap.app",
+    "productName": "Quizzap",
+    "files": [
+      "main.js",
+      "src/**/*"
+    ],
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "icon": "src/assets/icon.png",
+      "category": "Education",
+      "desktop": {
+        "StartupWMClass": "quizzap"
+      }
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "src/assets/icon.ico"
+    },
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "icon": "src/assets/icon.icns"
+    }
+  }
+}

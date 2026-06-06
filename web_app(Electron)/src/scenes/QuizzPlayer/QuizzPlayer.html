@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Quizzap - Jouer</title>
+        <link rel="stylesheet" href="style.css" />
+        <script src="index.js" defer></script>
+    </head>
+
+    <body>
+        <main class="box">
+            <div class="Loader" id="loader">
+                <div id="l1"></div>
+                <div id="l2"></div>
+                <div id="l3"></div>
+            </div>
+
+            <div id="page_wrapper">
+
+                <div id="page_header">
+                    <button id="quit_button">&#8592; quitter</button>
+                    <div id="quiz_title_display">—</div>
+                    <div id="progress_badge">Q 0/0</div>
+                </div>
+
+                <div id="timer_container">
+                    <div id="timer_bar_track">
+                        <div id="timer_bar"></div>
+                    </div>
+                    <span id="timer_text">60</span>
+                </div>
+
+                <div id="question_area">
+                    <p id="question_text"></p>
+                </div>
+
+                <div id="answers_area"></div>
+
+            </div>
+
+            <div id="results_overlay">
+                <div id="results_box">
+                    <p id="results_title">Résultats</p>
+                    <p id="results_score">—</p>
+                    <p id="results_label">—</p>
+                    <div id="results_breakdown"></div>
+                    <div id="results_actions">
+                        <button id="results_replay">rejouer</button>
+                        <button id="results_back">retour</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="Notification" id="notification"></div>
+        </main>
+    </body>
+
+</html>

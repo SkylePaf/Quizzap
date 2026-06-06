@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Quizzap - Mes Quizz</title>
+        <link rel="stylesheet" href="style.css" />
+        <script src="index.js" defer></script>
+    </head>
+
+    <body>
+        <main class="box">
+            <div class="Loader" id="loader">
+                <div id="l1"></div>
+                <div id="l2"></div>
+                <div id="l3"></div>
+            </div>
+
+            <div id="page_wrapper">
+                <div id="page_header">
+                    <button id="back_button">&#8592; retour</button>
+                    <div id="page_title">Mes Quizz</div>
+                    <div id="quiz_count_badge">0 quizz</div>
+                </div>
+
+                <div id="quiz_grid">
+                    <div id="empty_state">
+                        <p>aucun quizz</p>
+                        <small>créez votre premier quizz ou importez-en un</small>
+                        <button id="go_create_btn">créer un quizz</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="Notification" id="notification"></div>
+
+            <div id="confirm_modal">
+                <div class="ConfirmBox">
+                    <p>Supprimer ce quizz ?</p>
+                    <div class="ConfirmButtons">
+                        <button id="confirm_yes">Oui</button>
+                        <button id="confirm_no">Non</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </body>
+
+</html>
