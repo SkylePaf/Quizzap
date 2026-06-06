@@ -3,7 +3,7 @@
 > Une application quizz simple et efficace.
 
 **Créateur de quizz · Gestionaire de quizz · Importeur de quizz · Joueur de quizz**  
-²Développé entièrement en HTML/CSS/JS - sans framework, sans moteur.
+Développé entièrement en HTML/CSS/JS - sans framework, sans moteur.
 
 [▶ Essayer En ligne](https://skylepaf.github.io/Quizzap/web_browser/index.html)
 
