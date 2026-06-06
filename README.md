@@ -15,11 +15,11 @@ Développé entièrement en HTML/CSS/JS - sans framework, sans moteur.
 
 | Createur de quizz | Joueur de quizz |
 |---|---|
-| ![menu](screenshots/quizz_maker.png) | ![world2](screenshots/quizz_player.png) |
+| ![maker](screenshots/quizz_maker.png) | ![player](screenshots/quizz_player.png) |
 
 | Gestion de quizz | Importeur de quizz |
 |---|---|
-| ![world5](screenshots/quizz_manager.png) | ![world8](screenshots/quizz_importer.png) |
+| ![manager](screenshots/quizz_manager.png) | ![importer](screenshots/quizz_importer.png) |
 
 ---
 
