@@ -17,7 +17,7 @@ Développé entièrement en HTML/CSS/JS - sans framework, sans moteur.
 |---|---|
 | ![maker](screenshots/quizz_maker.png) | ![player](screenshots/quizz_player.png) |
 
-| Gestion de quizz | Importeur de quizz |
+| Gestionaire de quizz | Importeur de quizz |
 |---|---|
 | ![manager](screenshots/quizz_manager.png) | ![importer](screenshots/quizz_importer.png) |
 
