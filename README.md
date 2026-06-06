@@ -5,7 +5,7 @@
 **Quizz maker · Quizz manager · Quizz importer**  
 Built entirely in vanilla HTML/CSS/JS - no framework, no engine.
 
-[▶ Use Online](https://skylepaf.github.io/Eat_Them_All/web_browser/index.html)
+[▶ Use Online](https://skylepaf.github.io/Quizzap/web_browser/index.html)
 
 *Data will be save in the browser localstorage.*
 
