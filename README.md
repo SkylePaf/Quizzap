@@ -122,11 +122,6 @@ Les quizz sont 100% gérés en fichiers de données — un quizz se construit de
 ```
 
 L'id est généré grace à une combinaison d'un nombre aléatoire et la date éxacte.
-Pour la suite : 
-- Createur de quizz = CQ
-- Joueur de quizz = JQ
-- Gestion de quizz = GQ
-- Importeur de quizz = IQ
 
 ---
 
