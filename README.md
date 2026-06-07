@@ -124,3 +124,4 @@ npm run build
 ## Credits
 
 Code, design and visuals by **SkylePaf**.
+*Built in mid 2026.*
