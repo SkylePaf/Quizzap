@@ -5,6 +5,8 @@
 **Créateur de quizz · Gestionnaire de quizz · Importeur de quizz · Joueur de quizz**  
 Développé entièrement en HTML/CSS/JS - sans framework, sans moteur.
 
+*Built in mid 2026.*
+
 [▶ Essayer en ligne](https://skylepaf.github.io/Quizzap/web_browser/index.html)
 
 *Les données seront enregistrées dans le local storage du navigateur.*
@@ -124,3 +126,4 @@ npm run build
 ## Credits
 
 Code, design and visuals by **SkylePaf**.
+*Built in mid 2026.*
